@@ -1,0 +1,357 @@
+
+/* ----------- THE FOLLOWING IS USED BY TASMOTA LIST---------*/
+.animated_result_container {
+        transition: all 1s;
+	color:#b3ffb3;
+    background-color:#404040;
+    padding:0px;
+}
+.animated_result_container.start {
+        opacity:0.5;
+    background-color:#404040;
+}
+.animated_result_container a {
+	color:#b3ffb3;
+  text-decoration: underline;
+    
+}
+
+table.tasmota_main_table {
+    border-collapse: collapse;
+    padding:5px;
+    white-space: pre;
+    border: 1px solid #000000 ;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+}
+
+.tasmota_horizontal_caption {
+   border-collapse: collapse;
+    white-space: pre;
+    background-color:#808080;
+    color: #FFF;
+    text-align: center;
+    border: 1px solid black;
+    padding:5px;
+    
+}
+.tasmota_main_table_title  {
+    white-space: pre;
+    border-collapse: collapse;
+    color: #FFF;
+    text-align: center;
+    border: 1px solid black;
+    padding:5px;
+    font-size:2em;
+    background-color:#4d4d4d;
+    
+}
+table.tasmota_main_table tr td {
+   border-collapse: collapse;
+}
+table.tasmota_relay_table {
+   border-collapse: collapse;
+    border: 1px solid black;
+    padding:0px;
+    margin:0px;
+}
+table.tasmota_relay_table tr {
+    
+}
+table.tasmota_relay_table tr th {
+   border-collapse: collapse;
+    border: 1px solid black;
+    padding:5px 0px 5px 0px;
+    margin:0px;
+    font-size:16px;
+    text-align:left;
+    color:white;
+    background-color:#808080;
+    
+}
+
+.tasmota_relay_table tr th input[type=checkbox]{
+    width:16px;
+    height:16px;
+    position:relative;
+}
+
+table.tasmota_relay_table tr td {
+   border-collapse: collapse;
+    border: 1px solid black;
+    margin:0px;
+    
+}
+td.tasmota_relay_table_index_td {
+    font-size:14px;
+    padding:5px 3px 5px 5px;
+    text-align:center;
+    color:#d6f72d;
+    background-color:#8e8f8c;
+    
+}
+.tasmota_relay_table_buttons_td {
+   border-collapse: collapse;
+    margin:0px;
+    padding:3px;
+    font-size: 13px;
+    border: 1px solid black;
+}
+
+.tasmota_relay_table_buttons_td div {
+    display:inline-block;
+}
+.tasmota_relay_table_buttons_td div button {
+    font-size: 13px;
+}
+.tasmota_relay_result_td {
+    padding:0px;
+    margin:0px;
+    border: 1px solid black;
+   border-collapse: collapse;
+    border: 1px solid black;
+}
+
+.tasmota_relay_result_td div {
+    padding:5px 0px 5px 2px;
+    
+}
+.tasmota_reference_output{
+    
+  font-family: Tahoma, Arial, sans-serif;
+  color:yellow;
+  white-space: pre-wrap;
+  width:inherit;
+  max-width:inherit;
+}
+.tasmota_main_result {
+    padding:0px;
+    margin:0px;
+    font-family: "Lucida Console", Monaco, monospace,"Courier New", Courier;
+    white-space: pre-wrap;
+    
+    border: 1px solid black;
+   border-collapse: collapse;
+}
+.tasmota_main_result div {
+    padding:4px;
+    overflow-x: hidden;
+    overflow-y:auto;
+}
+div.tasmota_tiny_result {
+    display:inline-block;
+    font-family: "Lucida Console", Monaco, monospace,"Courier New", Courier;
+    font-size: small;
+}
+input.hostname {
+    display:inline-block;
+}
+.tasmota_jscript_feed {
+    padding:5px;
+    margin:0px;
+    font-family: "Lucida Console", Monaco, monospace,"Courier New", Courier;
+    font-size: small;
+    
+}
+
+.tasmota_jscript_feed div {
+    overflow-x: hidden;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+td.tasmota_buttons_area {
+    border-collapse: collapse;
+    border: 1px solid black;
+    
+}
+div.tasmota_buttons_area {
+    display:block;
+    white-space: pre-wrap;
+}
+
+.tasmota_buttons_area button {
+  font-size: 13px;
+}
+
+.tasmota_horizontal_result {
+    padding:0px;
+    margin:0px;
+    white-space:pre-wrap;
+    border-collapse: collapse;
+    border: 1px solid black;
+    
+    
+}
+.tasmota_horizontal_result div.constrain_this {
+    padding:0px;
+    margin:0px;
+    white-space:pre-wrap;
+    display:inline-block;
+    overflow: hidden;
+}
+
+.tasmota_vertical_caption {
+    
+    padding:0px;
+    margin:0px;
+    
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+.tasmota_vertical_caption button {
+  font-size: 13px;
+}
+.tasmota_vertical_result  {
+    padding:0px;
+    margin:0px;
+    white-space:pre;
+    font-size: 13px;
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+.tasmota_vertical_result div {
+    white-space:pre;
+}
+.tasmota_relays_td  {
+    padding:0px;
+    margin:0px;
+    white-space:pre-wrap;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+.tasmota_relays_td div.constrain_this  {
+    padding:0px;
+    margin:0px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.tasmota_command_input {
+    padding: 3px 0px 0px 10px;
+    width:inherit;
+    min-width:inherit;
+    max-width: inherit;
+    height:inherit;
+    white-space: inherit;
+    display:flex;
+    flex-wrap:nowrap;
+} 
+div.tasmota_command_input input[type=text] {
+    width:120px;
+    margin:0px;
+    padding:0px;
+    border-radius: 0px;
+    border: 1px solid black;
+    border-collapse: collapse;
+    border-spacing: 0px;
+    box-sizing: border-box;
+    font-size: 14px;
+    height:25px;
+}
+div.tasmota_command_input input[type=checkbox] {
+    width:25px;
+    height:25px;
+    margin:0px;
+    padding:0px;
+    border-radius: 0px;
+    border: 1px solid black;
+    border-collapse: collapse;
+    border-spacing: 0px;
+    box-sizing: border-box;
+}
+.tasmota_relay_table {
+    width:inherit;
+    padding-right:15px;
+}
+
+/* ---------- BOTTOM AREA ------------ */
+
+td.tasmota_hr_td {
+    padding:0px;
+    margin:0px;
+    border-collapse: collapse;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+.tasmota_hr_td hr {
+    width:90%;
+}
+.tasmota_bottom_title_td {
+    padding-top: 5px;
+    padding-left:0px;
+    padding-right: 0px;
+    margin: 0px;
+    border-collapse: collapse;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    
+}
+.tasmota_bottom_title_td hr {
+    display:inline-block;
+    width:90%;
+}
+
+.tasmota_bottom_manual_command_td {
+   border-collapse: collapse;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    
+}
+.tasmota_select_checkbox_td {
+   border-collapse: collapse;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    
+}
+
+
+td.tasmota_select_buttons_area {
+   border-collapse: collapse;
+    border: 1px solid black;
+    
+    padding:0px;
+    margin:0px;
+    
+}
+div.tasmota_select_buttons_area {
+    padding:0px;
+    margin:0px;
+    display:block;
+    white-space:pre-wrap;
+}
+td.tasmota_select_relay {
+    padding:0px;
+    margin:0px;
+    
+}
+div.tasmota_select_relay {
+    padding:0px;
+    margin:0px;
+    display:inline-block;
+    white-space:pre-wrap;
+}
+div.tasmota_select_relay div  {
+    padding:0px;
+    margin:0px;
+    
+}
+.tasmota_select_buttons_area_vertical {
+    
+    max-height:inherit;
+    max-width:inherit;
+    padding:0px;
+    margin:0px;
+    white-space:pre-wrap;
+    
+}
+.constrain_this {
+    max-height:inherit;
+    max-width:inherit;
+    width:inherit;
+    height:inherit;
+    white-space: inherit;
+}
+.wrap_button {
+    display:inline-block;
+    position:relative;
+    overflow:hidden;
+}
