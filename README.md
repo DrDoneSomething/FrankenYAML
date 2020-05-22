@@ -10,9 +10,10 @@ FrankenYAML
 
   - FrankenYAML will take all your .yaml files for HomeAssistant and turn each entry into an Object.
   - Not exciting enough for you? Well you can then add, edit, delete, disable (comment out), and export it, then re-import it!
-  - you can create an encrypten saved copy (make a login/password), otherwise transfers the stuff around via exported _POST_ values!
-    (yes I know that's silly, but it works)
-  - Still not good enough? Well you can export either to one big file (makes the pi boot happier) or to a bunch of tiny files like Frenck did in his setup.
+  - Not feeling it? You can create an encrypted saved copy (make a login/password) and access it later.
+      - otherwise transfers the stuff from panel to panel via exported _POST_ values (your config is stored nowhere but your browser RAM, for better security)
+  - Still not good enough? Well you can export either to one big file (makes the pi boot happier) or to a bunch of tiny files like <a href="https://www.youtube.com/watch?v=lndeybw21PY">Frenck did in his setup.</a>
+  - Has some built-in help bubbles if you're totally lost
  
  Tasmota List
   - Scans your network for tasmota devices via web send!
