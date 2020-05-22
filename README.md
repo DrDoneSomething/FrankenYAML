@@ -3,8 +3,10 @@ By Dr DoneSomething
 
 BSD license
 
-What Do It Do
+What Do It Do:
+
 FrankenYAML
+
   - FrankenYAML will take all your .yaml files for HomeAssistant and turn each entry into an Object.
   - Not exciting enough for you? Well you can then add, edit, delete, disable (comment out), and export it, then re-import it!
   - you can create an encrypten saved copy (make a login/password), otherwise transfers the stuff around via exported _POST_ values!
