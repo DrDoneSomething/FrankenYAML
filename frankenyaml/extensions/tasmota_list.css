@@ -54,67 +54,6 @@ table.tasmota_relay_table {
     padding:0px;
     margin:0px;
 }
-table.tasmota_relay_table tr {
-    
-}
-table.tasmota_relay_table tr th {
-   border-collapse: collapse;
-    border: 1px solid black;
-    padding:5px 0px 5px 0px;
-    margin:0px;
-    font-size:16px;
-    text-align:left;
-    color:white;
-    background-color:#808080;
-    
-}
-
-.tasmota_relay_table tr th input[type=checkbox]{
-    width:16px;
-    height:16px;
-    position:relative;
-}
-
-table.tasmota_relay_table tr td {
-   border-collapse: collapse;
-    border: 1px solid black;
-    margin:0px;
-    
-}
-td.tasmota_relay_table_index_td {
-    font-size:14px;
-    padding:5px 3px 5px 5px;
-    text-align:center;
-    color:#d6f72d;
-    background-color:#8e8f8c;
-    
-}
-.tasmota_relay_table_buttons_td {
-   border-collapse: collapse;
-    margin:0px;
-    padding:3px;
-    font-size: 13px;
-    border: 1px solid black;
-}
-
-.tasmota_relay_table_buttons_td div {
-    display:inline-block;
-}
-.tasmota_relay_table_buttons_td div button {
-    font-size: 13px;
-}
-.tasmota_relay_result_td {
-    padding:0px;
-    margin:0px;
-    border: 1px solid black;
-   border-collapse: collapse;
-    border: 1px solid black;
-}
-
-.tasmota_relay_result_td div {
-    padding:5px 0px 5px 2px;
-    
-}
 .tasmota_reference_output{
     
   font-family: Tahoma, Arial, sans-serif;
@@ -132,7 +71,7 @@ td.tasmota_relay_table_index_td {
     border: 1px solid black;
    border-collapse: collapse;
 }
-.tasmota_main_result div {
+.tasmota_main_result div.constrain_this {
     padding:4px;
     overflow-x: hidden;
     overflow-y:auto;
@@ -145,12 +84,17 @@ div.tasmota_tiny_result {
 input.hostname {
     display:inline-block;
 }
+.tasmota_item_checkbox_td {
+    border: 1px solid black;
+   border-collapse: collapse;
+    
+}
+
 .tasmota_jscript_feed {
     padding:5px;
     margin:0px;
     font-family: "Lucida Console", Monaco, monospace,"Courier New", Courier;
     font-size: small;
-    
 }
 
 .tasmota_jscript_feed div {
@@ -225,15 +169,77 @@ div.tasmota_buttons_area {
     overflow-x: hidden;
 }
 
-.tasmota_command_input {
-    padding: 3px 0px 0px 10px;
+table.tasmota_relay_table tr {
+    
+}
+table.tasmota_relay_table tr th {
+   border-collapse: collapse;
+    border: 1px solid black;
+    padding:5px 0px 5px 0px;
+    margin:0px;
+    font-size:16px;
+    text-align:left;
+    color:white;
+    background-color:#808080;
+    
+}
+
+.tasmota_relay_table tr th input[type=checkbox]{
+    width:16px;
+    height:16px;
+    position:relative;
+}
+
+table.tasmota_relay_table tr td {
+   border-collapse: collapse;
+    border: 1px solid black;
+    margin:0px;
+    
+}
+td.tasmota_relay_table_index_td {
+    font-size:14px;
+    padding:5px 3px 5px 5px;
+    text-align:center;
+    color:#d6f72d;
+    background-color:#8e8f8c;
+    
+}
+.tasmota_relay_table_buttons_td {
+   border-collapse: collapse;
+    margin:0px;
+    padding:3px;
+    font-size: 13px;
+    border: 1px solid black;
+}
+
+.tasmota_relay_table_buttons_td div {
+    display:inline-block;
+}
+.tasmota_relay_table_buttons_td div button {
+    font-size: 13px;
+}
+.tasmota_relay_result_td {
+    padding:0px;
+    margin:0px;
+    border: 1px solid black;
+   border-collapse: collapse;
+    border: 1px solid black;
+}
+
+.tasmota_relay_result_td div {
+    padding:5px 0px 5px 2px;
+    
+}
+
+
+div.tasmota_command_input {
+    padding: 10px 5px 5px 10px;
     width:inherit;
     min-width:inherit;
     max-width: inherit;
     height:inherit;
     white-space: inherit;
-    display:flex;
-    flex-wrap:nowrap;
+    position:relative;
 } 
 div.tasmota_command_input input[type=text] {
     width:120px;
@@ -250,13 +256,15 @@ div.tasmota_command_input input[type=text] {
 div.tasmota_command_input input[type=checkbox] {
     width:25px;
     height:25px;
-    margin:0px;
+    margin:5px;
     padding:0px;
     border-radius: 0px;
     border: 1px solid black;
     border-collapse: collapse;
     border-spacing: 0px;
     box-sizing: border-box;
+}
+.tasmota_command_input span.tooltiptext {
 }
 .tasmota_relay_table {
     width:inherit;
@@ -354,4 +362,13 @@ div.tasmota_select_relay div  {
     display:inline-block;
     position:relative;
     overflow:hidden;
+    white-space:pre-wrap;
+}
+.wrap_select_checkbox {
+    display:inline-block;
+    position:relative;
+    overflow:hidden;
+    white-space:pre-wrap;
+    height:inherit;
+    
 }

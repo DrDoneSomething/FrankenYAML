@@ -566,7 +566,7 @@ function save_configuration()
 
     }
 
-    echo count($disp_entities)." saved to dispent<br />";
+    //echo count($disp_entities)." saved to dispent<br />";
     $disp_entities['configuration']['saved_settings'] = $saved_settings;
 }
 // $expected type is array or not

@@ -225,6 +225,11 @@ switch ($disp_mode) {
         echo "TOTAL INTEGRATIONS: " . count($disp_entities) . '<br /><ul>';
         echo "";
         foreach ($disp_array as $file_type => $int) {
+            if(!isset($int['name']))
+            {
+                echo "<li>$file_type.yaml is empty</li>\n";
+                continue;
+            }
 
             $disabled = $int['disabled'] ? " * DISABLED *" : "";
             $disabled_class = $disabled ? ' class="disabled" ' : ' class="display" ';
@@ -380,7 +385,12 @@ switch ($disp_mode) {
 
         echo "TOTAL INTEGRATIONS: " . count($disp_entities) . '<br /><ul>';
         $html = "";
-        foreach ($disp_entities as $int) {
+        foreach ($disp_entities as $key_name=> $int) {
+            if(!isset($int['name']))
+            {
+                $html .= "<li>$key_name.yaml is empty</li>\n";
+                continue;
+            }
             $disabled = $int['disabled'] ? " * DISABLED *" : "";
             $disabled_class = $disabled ? ' class="disabled" ' : ' class="display" ';
             $html .= '<li ' . $disabled_class . '><b>' . $int['name'];

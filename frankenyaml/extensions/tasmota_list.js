@@ -48,7 +48,7 @@ function tasmota_manual_command(return_id,mode,cmnd)
         console.log("FAIL: tasmota_manual_command  "+error);
         return false;
     }
-    
+    var show_tooltip = true;
     
     switch(mode)
     {
@@ -58,7 +58,7 @@ function tasmota_manual_command(return_id,mode,cmnd)
                 set_element_disabled(button,true);
                 return;
             }
-            console.log("get reference");
+            
             if(!textbox.value)
             {
                 js_output = "[command blank]";
@@ -77,8 +77,44 @@ function tasmota_manual_command(return_id,mode,cmnd)
             set_element_disabled(button,true);
             checkbox_tooltip.style.display = "initial";
         break;
+        case 'receive_reference_no_tip':
+            show_tooltip = false;
         case 'receive_reference':
-        
+            var error = false;
+            var return_direct = false;
+            if('array' in cmnd)
+            {
+                return_direct = true;
+                var check_keys = ['tooltip','array'];
+                for(var i in check_keys)
+                {
+                    if(!(check_keys[i] in cmnd))
+                    {
+                        console.log("FAIL: key "+check_keys[i]+" not found in cmnd ");
+                        console.log(cmnd);
+                        js_output = "[Error]";
+                        error = true;
+                        break;
+                    }
+                }
+                if(error)
+                    break;
+                var tooltip = cmnd['tooltip'];
+                var array = cmnd['array'];
+                cmnd = {};
+                var count = 0;
+                for(var i in array)
+                {
+                    if(count)
+                        tasmota_manual_command(return_id,'receive_reference_no_tip',array[i]);
+                    else
+                        cmnd = array[i];
+                    count++;
+                }
+                cmnd['tooltip'] = tooltip;
+                
+            }
+            
             var check_keys = ['tooltip','parsed'];
             for(var i in check_keys)
             {
@@ -87,9 +123,12 @@ function tasmota_manual_command(return_id,mode,cmnd)
                     console.log("FAIL: key "+check_keys[i]+" not found in cmnd ");
                     console.log(cmnd);
                     js_output = "[Error]";
+                    error = true;
                     break;
                 }
             }
+            if(error)
+                break;
             if(!cmnd['parsed']['found'])
             {
                 
@@ -140,11 +179,14 @@ function tasmota_manual_command(return_id,mode,cmnd)
             console.log("FAIL: tasmota_manual_command  "+error);
             return false;
         }
-        loadScriptAndShowPending(return_id,js_url,"Reference "+cmnd);
+        
+        dhtmlLoadScriptAddToQueueNamed(js_url,"Reference "+cmnd);
     }
     if(return_text)
     {
-        tooltip_output = js_output = return_text;
+        if(show_tooltip)
+            tooltip_output = return_text;
+        js_output = return_text;
     }
     if(js_output)
     {
@@ -276,8 +318,10 @@ function return_to_inner(id,text)
     new_div.innerHTML = text;
     new_div.className = "constrain_this";
     var inner_divs = new_div.getElementsByTagName("div");
+        
+    
     if(inner_divs.length)
-        obj.innerHTML = new_div.innerHTML;
+        obj.innerHTML = text;
     else
     {
         obj.innerHTML = "";
@@ -305,12 +349,19 @@ function append_to_inner(id,text)
     new_div.innerHTML = text;
     new_div.className = "constrain_this";
     
-    //var new_div_delimiters = new_div.getElementsByTagName("br");
+    var input_div_status = text.indexOf("<div")
+    if(input_div_status != -1)
+    {
+        if(input_div_status ==0 || !text.substr(0,input_div_status+1).trim())
+        {
+            new_div = new_div.getElementsByTagName("div")[0];
+            text = new_div.innerHTML;
+        }
+    }
+    // If there exists a div, we will always use that div!
     
-    //if(new_div_delimiters.length)
-    //    var delimiter = "";
-    //else
-        var delimiter = "<br /><br />";
+    var delimiter = "<br /><br />";
+    
     
     var div = false;
     if(inner_divs.length)
@@ -320,7 +371,7 @@ function append_to_inner(id,text)
         div.innerHTML = text+delimiter+div.innerHTML ;
     else
     {
-        new_div.innerHTML = text+delimiter+obj.innerHTML;
+        new_div.innerHTML += delimiter+obj.innerHTML;
         obj.innerHTML = "";
         obj.appendChild(new_div);
     }
@@ -509,7 +560,7 @@ function exec_tasmota(data_id,return_id,command_string,use_ip)
         loadScriptAndShowPending(return_id,js_url,name);
         return true;
     }
-    console.log("Command to "+return_id+" cmnd: '"+command_string+"' FAILED: "+error);
+    js_log("Command to "+return_id+" cmnd: '"+command_string+" data_id "+data_id+" FAILED: "+error);
     return false;
     //
 }

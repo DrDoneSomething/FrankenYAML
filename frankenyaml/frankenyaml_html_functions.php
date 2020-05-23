@@ -14,11 +14,14 @@ define("MULTIVAR_DELIMITER", "|!|");
 define("MULTIVAR_EQUALS", "|=|");
 define("CLEAR_USE_KEY","4321jlkBLARGInpoop");
 defined("IN_YAML_HELPER") || die("not in helper");
+
+define("RESERVED_ELEMENT_ATTRIBUTES",array("contents","innerHTML","id_suffix","tag","tag_name","id_prefix"));
 $form_keys = array();
 $parse_errors = array();
 $parse_errors_count = 0;
 $post_var_cache = array();
 $html_functions_total_inputs = 0;
+$html_functions_all_ids = array();
 function use_key($name, $add = true)
 {
     global $form_keys, $html_functions_total_inputs;
@@ -34,11 +37,34 @@ function use_key($name, $add = true)
         $form_keys[$name] = $name;
     return $html_functions_total_inputs;
 }
+function use_id($id,$add = true)
+{
+    $array = "Input Not Array";
+    if(is_array($id))
+    {
+        if(!isset($id['id']))
+            return true;
+        $array = $id;
+        $id = $id['id'];
+        if($id!==0&& !$id)
+            // we'll leave the error for another day
+            return true;
+    }
+    if($add)
+    {
+        if(isset($html_functions_all_ids[$id]))
+            die("COULD NOT USE ID $id -- Duplicate! Input: ".var_export($array,true));
+        $html_functions_all_ids[$id] = $id;
+        return true;
+    }
+    if(isset($html_functions_all_ids[$id]))
+        return $id;
+}
 function id_attribute(&$id, $number = false)
 {
     $id = $id ? $id : $number;
     $id = generate_id($id);
-
+    use_id($id);
     return ' id="' . $id . '" ';
 }
 function generate_id($id = false)
@@ -199,9 +225,12 @@ function create_element_attributes($input, $array = array())
 
     if (!$array)
         return $attrib_string;
-
+    extract_id_from_attributes($array);
+    use_id($array);
     foreach ($array as $key => $val) {
         if($val === false)
+            continue;
+        if(in_array($key,RESERVED_ELEMENT_ATTRIBUTES))
             continue;
         $name = is_numeric($key) ? false : strtolower($key);
         switch ($name) {
@@ -228,6 +257,21 @@ function create_element_attributes($input, $array = array())
     }
     return $attrib_string;
 
+}
+function extract_id_from_attributes(&$array)
+{
+    $id = "";
+    if(isset($array['id']))
+        $id = $array['id'];
+    if(isset($array['id_prefix']))
+        $id = $array['id_prefix'].$id;
+    if(isset($array['id_suffix']))
+        $id .= $array['id_prefix'];
+    unset($array['id_prefix']);
+    unset($array['id_suffix']);
+    unset($array['id']);
+    if($id!=="")
+        $array['id'] = $id;
 }
 function create_attribute_style($array)
 {

@@ -45,11 +45,22 @@ $attrib = create_element_attributes($attrib);
 echo '<tr><th ' . $attrib . '>TASMOTAS</th></tr>';
 
 echo '<tr>';
+
+
+$attrib = ITEM_CHECKBOX_TH_ATTRIBUTES;
+$attrib = create_element_attributes($attrib);
+$img = '<img src="'.stored_file("check.png").'" />';
+echo "<th $attrib>$img</th>";
+
+
+
 $attrib = HORIZONTAL_RESULT_CAPTION_TH;
 $attrib = create_element_attributes($attrib);
-
-foreach (DISPLAY_VALUES as $key) {
-    $pretty_key = ucwords(str_replace("_", " ", $key));
+foreach (DISPLAY_VALUES as $alt_caption => $key) {
+    if(is_numeric($alt_caption))
+        $pretty_key = ucwords(str_replace("_", " ", $key));
+    else
+        $pretty_key = $alt_caption;
     echo "<th $attrib>" . $pretty_key . "</th>";
 
 }
@@ -95,28 +106,26 @@ foreach ($tasmota_list as $index => $info) {
     $return_id = $hostname;
 
     // first col
-    $select = '<input type="checkbox" name="hostnames[]" value="' . $hostname .
-        '" onclick="add_hostname_to_list(this.value, this.checked)" class="hostname" />';
-
+    $select = make_select_input($hostname);
     $select .= json_div($hostname, "tr_classname", $tr_classname);
-
-    $select_extra = SCAN_MODE ? "" : remove_tasmota_button($hostname);
-    if (!$select_extra && LIST_DISPLAY_MODE == "short") {
+    
+    /*
+    if (LIST_DISPLAY_MODE == "short") {
         $attrib = TINY_RESULT_DIV_ATTRIBUTES;
         $attrib['id'] = "{$hostname}_td_js_output";
         $attrib = create_element_attributes($attrib);
+        
+        $select .= "<div $attrib>&nbsp;</div>";
+    }*/
 
-        $select_extra .= "<div $attrib>&nbsp;</div>";
-    }
-    $select .= $select_extra;
-
-    $item_data['select'] = $select;
 
     $last_refresh = time_since($item_data['last_refresh']);
 
 
     // last col
-    $item_data['other'] = make_tasmota_cmnd_input($hostname);
+    
+    $remove_button = SCAN_MODE ? "" : " | ".remove_tasmota_button($hostname);
+    $item_data['other'] = make_tasmota_cmnd_input($hostname).$remove_button;
     $horizontal_values = "";
     foreach (DISPLAY_VALUES as $key) {
         $data = $item_data[$key];
@@ -128,6 +137,7 @@ foreach ($tasmota_list as $index => $info) {
     }
 
     echo "<tr $tr_classname_attribute>";
+    dump_td($select,ITEM_CHECKBOX_TD_ATTRIBUTES);
     echo $horizontal_values;
     echo '</tr>';
     //--------------------------------- below is for full display ------------------------
@@ -251,7 +261,7 @@ $onload_commands = array();
 $onload_commands[] = js_exec_selected(DEFAULT_CMND);
 
 $select = '<input type="checkbox" onchange="set_all_checkboxes_to_me(this)" ';
-$select .= 'id="select_all_hostnames_checkbox" class="hostname" value="1" name="select_all_hostnames" />*ALL*
+$select .= 'id="select_all_hostnames_checkbox" class="hostname" value="1" name="select_all_hostnames" />
     <script>newfun = function() { var checkitall= document.getElementById(\'select_all_hostnames_checkbox\'); checkitall.click();
     ';
 $select .= implode("\n", $onload_commands);
@@ -269,13 +279,15 @@ echo "<td $attrib>" . $select . "</td>";
 
 $attrib = BOTTOM_SMALL_HR_TD;
 $attrib = create_element_attributes($attrib);
+echo "<td $attrib><b>Select All</b></td>";
 echo "<td $attrib><hr /></td>";
 
 
 $attrib = BOTTOM_MANUAL_COMMAND_TD_ATTRIBUTES;
 $attrib = create_element_attributes($attrib);
 echo "<td $attrib>";
-echo make_tasmota_cmnd_input(JAVASCRIPT_DUMP_ID_PREFIX);
+$cmnd_input =  make_tasmota_cmnd_input(JAVASCRIPT_DUMP_ID_PREFIX);
+echo format_display_value($cmnd_input,"tasmota_command_input");
 echo "</td>";
 
 

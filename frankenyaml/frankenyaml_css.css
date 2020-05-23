@@ -234,6 +234,7 @@ td  .tooltiptext, span  .tooltiptext, div  .tooltiptext {
     padding: 5px 0;
     white-space: normal;
     line-height: 110%;
+    
     /* Position the tooltip */
     position: absolute;
     z-index: 1;
