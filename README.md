@@ -30,4 +30,4 @@ Installation
 - Note: this saves data to text files so it must have permissions!
 
 Instructions
-- Forthcoming! .. ?
+- <a href="https://www.youtube.com/watch?v=-sv9vlIR-7U">Tasmota List Basics, installation, advanced use</a>
