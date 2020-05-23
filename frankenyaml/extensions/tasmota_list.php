@@ -347,8 +347,7 @@ echo "<td  $attrib>";
 $attrib = BOTTOM_RELAY_DIV_CONTAINER_ATTRIBUTES;
 $attrib = create_element_attributes($attrib);
 echo "<div $attrib>";
-if (LIST_DISPLAY_MODE == "full")
-    echo format_display_value('selected', 'RelayName', 'selected');
+echo format_display_value('selected', 'RelayName', 'selected');
 echo '</div>';
 echo '</td>';
 

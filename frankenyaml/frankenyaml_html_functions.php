@@ -12,10 +12,16 @@
  **/
 define("MULTIVAR_DELIMITER", "|!|");
 define("MULTIVAR_EQUALS", "|=|");
-define("CLEAR_USE_KEY","4321jlkBLARGInpoop");
+define("CLEAR_USE_KEY", "4321jlkBLARGInpoop");
 defined("IN_YAML_HELPER") || die("not in helper");
 
-define("RESERVED_ELEMENT_ATTRIBUTES",array("contents","innerHTML","id_suffix","tag","tag_name","id_prefix"));
+define("RESERVED_ELEMENT_ATTRIBUTES", array(
+    "contents",
+    "innerHTML",
+    "id_suffix",
+    "tag",
+    "tag_name",
+    "id_prefix"));
 $form_keys = array();
 $parse_errors = array();
 $parse_errors_count = 0;
@@ -25,8 +31,7 @@ $html_functions_all_ids = array();
 function use_key($name, $add = true)
 {
     global $form_keys, $html_functions_total_inputs;
-    if($name === CLEAR_USE_KEY)
-    {
+    if ($name === CLEAR_USE_KEY) {
         $form_keys = array();
         return 0;
     }
@@ -37,27 +42,25 @@ function use_key($name, $add = true)
         $form_keys[$name] = $name;
     return $html_functions_total_inputs;
 }
-function use_id($id,$add = true)
+function use_id($id, $add = true)
 {
     $array = "Input Not Array";
-    if(is_array($id))
-    {
-        if(!isset($id['id']))
+    if (is_array($id)) {
+        if (!isset($id['id']))
             return true;
         $array = $id;
         $id = $id['id'];
-        if($id!==0&& !$id)
-            // we'll leave the error for another day
+        if ($id !== 0 && !$id) // we'll leave the error for another day
+
             return true;
     }
-    if($add)
-    {
-        if(isset($html_functions_all_ids[$id]))
-            die("COULD NOT USE ID $id -- Duplicate! Input: ".var_export($array,true));
+    if ($add) {
+        if (isset($html_functions_all_ids[$id]))
+            die("COULD NOT USE ID $id -- Duplicate! Input: " . var_export($array, true));
         $html_functions_all_ids[$id] = $id;
         return true;
     }
-    if(isset($html_functions_all_ids[$id]))
+    if (isset($html_functions_all_ids[$id]))
         return $id;
 }
 function id_attribute(&$id, $number = false)
@@ -173,9 +176,9 @@ function form_close()
 // input must be:
 // variable name => value
 // takes an array full of variable names
-// OR since no variables are numeric, takes an array of variables as keys with default values 
-function return_attributes($input, $required_values, $optional_values = array(),$return_type="array",
-    $die_on_fail = true)
+// OR since no variables are numeric, takes an array of variables as keys with default values
+function return_attributes($input, $required_values, $optional_values = array(),
+    $return_type = "array", $die_on_fail = true)
 {
     if (!is_array($input))
         die("return_attributes expects array for input " . var_explode($input, true));
@@ -187,29 +190,28 @@ function return_attributes($input, $required_values, $optional_values = array(),
     $two_arrays = array($optional, $required_values);
     foreach ($two_arrays as $is_required => $array) {
         foreach ($array as $index_or_var => $var_or_val) {
-            $key = is_numeric($index_or_var)?$var_or_val:$index_or_var;
-            $value = is_numeric($index_or_var)?false:$index_or_var;
-            
+            $key = is_numeric($index_or_var) ? $var_or_val : $index_or_var;
+            $value = is_numeric($index_or_var) ? false : $index_or_var;
+
             if (is_numeric($index_or_var)) {
                 $all_options[$var_or_val] = false;
                 continue;
             }
             if (isset($all_options[$index_or_var]))
-                die("return_attributes input structure invalid, ".
-                " duplicate: key $key is already set - SENT ME BAD DATA: " . var_export($two_arrays,true));
-            if(isset($input[$key]))
+                die("return_attributes input structure invalid, " . " duplicate: key $key is already set - SENT ME BAD DATA: " .
+                    var_export($two_arrays, true));
+            if (isset($input[$key]))
                 $value = $input[$key];
-            elseif($is_required)
-            {
-                if($die_on_fail)
-                    die("return_attributes $key is required, not supplied ".var_export($input,true));
+            elseif ($is_required) {
+                if ($die_on_fail)
+                    die("return_attributes $key is required, not supplied " . var_export($input, true));
                 return false;
             }
-            $return[$key] =$value;
+            $return[$key] = $value;
 
         }
     }
-    if($return_type == "string")
+    if ($return_type == "string")
         return create_element_attributes($return);
     else
         return $return;
@@ -228,28 +230,28 @@ function create_element_attributes($input, $array = array())
     extract_id_from_attributes($array);
     use_id($array);
     foreach ($array as $key => $val) {
-        if($val === false)
+        if (is_bool($val))
             continue;
-        if(in_array($key,RESERVED_ELEMENT_ATTRIBUTES))
+        if (in_array($key, RESERVED_ELEMENT_ATTRIBUTES))
             continue;
         $name = is_numeric($key) ? false : strtolower($key);
         switch ($name) {
             case "style":
-                if(!is_array($val))
-                    die("create_element_attributes error: invalid array value for $key => ".
-                    var_export($val,true)." data: ".var_export($array));
+                if (!is_array($val))
+                    die("create_element_attributes error: invalid array value for $key => " .
+                        var_export($val, true) . " data: " . var_export($array));
                 $attrib_string .= create_attribute_style($val);
                 break;
             default:
-                if(is_array($val))
-                    die("create_element_attributes error: invalid string/num value $key/$name => ".
-                    var_export($val,true)." data: ".var_export($array));
+                if (is_array($val))
+                    die("create_element_attributes error: invalid string/num value $key/$name => " .
+                        var_export($val, true) . " data: " . var_export($array));
                 $attrib_string .= " $name=\"$val\" ";
                 break;
             case false:
-                if (!$val||!is_string($val))
-                    die("create_element_attributes error: invalid string value $key => ".
-                    var_export($val,true)." data: ".var_export($array));
+                if (!$val || !is_string($val))
+                    die("create_element_attributes error: invalid string value $key => " .
+                        var_export($val, true) . " data: " . var_export($array));
                 $attrib_string .= " $val ";
                 break;
 
@@ -261,16 +263,16 @@ function create_element_attributes($input, $array = array())
 function extract_id_from_attributes(&$array)
 {
     $id = "";
-    if(isset($array['id']))
+    if (isset($array['id']))
         $id = $array['id'];
-    if(isset($array['id_prefix']))
-        $id = $array['id_prefix'].$id;
-    if(isset($array['id_suffix']))
+    if (isset($array['id_prefix']))
+        $id = $array['id_prefix'] . $id;
+    if (isset($array['id_suffix']))
         $id .= $array['id_prefix'];
     unset($array['id_prefix']);
     unset($array['id_suffix']);
     unset($array['id']);
-    if($id!=="")
+    if ($id !== "")
         $array['id'] = $id;
 }
 function create_attribute_style($array)
@@ -281,8 +283,29 @@ function create_attribute_style($array)
         $array = array($array);
 
     $return_string = ' style="';
-    foreach ($array as $var => $val)
-        $return_string .= "$var:$val;";
+    foreach ($array as $var => $val) {
+        if (is_array($val))
+            die("create_attribute_style error:  value $key  was array=> " . var_export($val, true) .
+                " data: " . var_export($array));
+        if (is_bool($val))
+            continue;
+        if (is_numeric($var)) {
+            if (!is_string($val))
+                die("create_attribute_style error: invalid string value $key => " . var_export($val, true) .
+                    " data: " . var_export($array));
+            $val = trim($val);
+
+            if (substr($val, -1) != ";")
+                $val .= ";";
+            $return_string .= "$val ";
+            continue;
+        }
+
+        if (is_numeric($val))
+            $val .= "px";
+        $return_string .= "$var:$val; ";
+
+    }
     $return_string .= '" ';
     return $return_string;
 }
@@ -496,14 +519,14 @@ function ihide($name, $value, $id = false)
 }
 function ihide_these_vars($array)
 {
-    foreach($array as $key => $value)
-        ihide($key,$value);
+    foreach ($array as $key => $value)
+        ihide($key, $value);
 }
-function ihide_vars($array,$post_vars = true)
+function ihide_vars($array, $post_vars = true)
 {
     $output = array();
     foreach ($array as $key)
-        $output[$key] = $post_vars?pv_or_blank($key):gv_or_blank($key);
+        $output[$key] = $post_vars ? pv_or_blank($key) : gv_or_blank($key);
     ihide("previous_vars", base64_encode(serialize($output)));
 }
 function ihide_previous()

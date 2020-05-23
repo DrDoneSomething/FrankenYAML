@@ -5,6 +5,7 @@ defined("IN_YAML_HELPER") || die("not in helper");
 function js_cmnd_reference($mode = "get_reference", $return_id = false, $cmnd = false)
 {
     switch ($mode) {
+        case "separate_insert":
         case "insert":
         case "update":
         case "receive_reference":

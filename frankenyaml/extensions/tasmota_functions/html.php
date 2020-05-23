@@ -183,12 +183,12 @@ function make_button($button_id_or_input, $js_command = false, $caption = false,
         "extra_attributes",
         'div_wrap');
 
+    if (!$extra_attributes)
+        $extra_attributes = array();
+    elseif (!is_array($extra_attributes))
+        $extra_attributes = array($extra_attributes);
 
     if (is_array($button_id_or_input)) {
-        if (!$extra_attributes)
-            $extra_attributes = array();
-        elseif (!is_array($extra_attributes))
-            $extra_attributes = array($extra_attributes);
 
         foreach (array_merge($required_vars, $other_vars) as $alt_key => $var) {
             if (is_numeric($alt_key))
@@ -201,8 +201,8 @@ function make_button($button_id_or_input, $js_command = false, $caption = false,
             if ($unset)
                 unset($button_id_or_input[$unset]);
         }
+        $extra_attributes = array_merge($extra_attributes, $button_id_or_input);
 
-        $extra_attributes = array_merge($button_id_or_input, $extra_attributes);
     } else
         $id = $button_id_or_input;
 
@@ -278,15 +278,33 @@ function make_button($button_id_or_input, $js_command = false, $caption = false,
 //command_button($array, $caption, $data_id, $return_id, $title = false, $close_popup = false)
 function make_tasmota_cmnd_input($data_id, $return_id = false, $close_popup = false)
 {
-    if (!$return_id)
+    
+    $select_mode =($data_id == JAVASCRIPT_DUMP_ID_PREFIX);
+    $is_relay = $return_id=="relay";
+    
+    
+    
+    if($is_relay)
+    {
+        $data_id .= "__relay__";
         $return_id = $data_id;
+    }
+    if (!$return_id || $is_relay)
+        $return_id = $data_id;
+        
+        
+    $id_start = "{$data_id}_tasmota_cmnd_";
     $return_id_slashed = addslashes($return_id);
 
-    $id_start = "{$data_id}_tasmota_cmnd_";
     $textbox_js = "tasmota_manual_command('$return_id_slashed','textbox_update',this.value); return true;";
-    $checkbox_js = "tasmota_manual_command('$return_id_slashed','get_reference',this.value); return true;";
-    if ($data_id == JAVASCRIPT_DUMP_ID_PREFIX)
-        $button_js = js_exec_selected("not used", false, "this.value");
+    
+    if($is_relay)
+        $checkbox_js = "tasmota_manual_command('$return_id_slashed','get_reference_relay',this.value); return true;";
+    else
+        $checkbox_js = "tasmota_manual_command('$return_id_slashed','get_reference',this.value); return true;";
+    
+    if ($select_mode)
+        $button_js = js_exec_selected("not used", $is_relay, "this.value");
     else
         $button_js = js_exec_command("not used", $data_id, $return_id, "this.value");
 
@@ -304,13 +322,13 @@ function make_tasmota_cmnd_input($data_id, $return_id = false, $close_popup = fa
         "type" => "text",
         "id" => $id_start . "text",
         "onfocus" => $textbox_js,
-        "onclick" => $textbox_js,
-        "onkeyup" => $textbox_js);
+        "onclick" => $textbox_js);
     $checkbox_tooltip_attributes = array("class" => "tooltiptext", "id" => $checkbox_tooltip_id);
 
     $checkbox_attributes = array(
         "type" => "checkbox",
         "id" => $id_start . "checkbox",
+        "style" => array("cursor" => "help"),
         "onclick" => $checkbox_js);
     $button_tooltip = array("text" => "$button_tooltip_text", "id" => $tooltip_id);
     $button_attributes = array(
@@ -347,7 +365,7 @@ function remove_tasmota_button($hostname, $return_id = false, $caption = "", $to
     if (!$tooltip)
         $tooltip = "Remove $hostname from " . list_name();
     if (!$caption)
-        $caption = '<img src="'.stored_file("x.png").'" />';
+        $caption = '<img src="' . stored_file("x.png") . '" />';
 
     $return_id_get = js_format_return_id($return_id);
 
@@ -365,7 +383,9 @@ function remove_tasmota_button($hostname, $return_id = false, $caption = "", $to
     $js_command = "dhtmlLoadScriptAddToQueue('$js_url');";
     $button_id = $return_id . "_remove_hostname_button";
     $tooltip_attrib = ' title="' . $tooltip . '" ';
-    return make_button($button_id, $js_command, $caption, $tooltip);
+    $extra_attrib = array();
+    $extra_attrib['style']['cursor'] = "help";
+    return make_button($button_id, $js_command, $caption, $tooltip, $extra_attrib);
 
 
 }
@@ -418,7 +438,7 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
             $class = "tasmota_tiny_result";
         case "js_output":
             $json_div = "";
-            
+
             break;
         case 'ipaddress':
         case 'ip_address':
@@ -427,8 +447,7 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
                 '/">' . $value . '</a>';
             $html .= '&nbsp;&nbsp;<span><a href="' . single_item_url($value) . '">';
 
-            $html .= '<img src="' . stored_file("search_icon.png") .
-                '" /></a>';
+            $html .= '<img src="' . stored_file("search_icon.png") . '" /></a>';
             $html .= '<span class="tooltiptext">Isolate Item</span></span>';
             $value = $html;
             break;
@@ -437,22 +456,111 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
             $value = '<a  ' . $id . ' target="_blank" href="http://' . "$device_username:$device_password@$value" .
                 '/">' . $value . '</a>';
             break;
+        case 'power':
+        case 'power1':
+        case 'power2':
+        case 'power3':
+        case 'power4':
+        case 'power5':
+        case 'power6':
+        case 'power7':
+        case 'power8':
+        case 'power9':
+        case 'power10':
+        case 'power11':
+        case 'power12':
+            $relay_num = (int)filter_var($value_name, FILTER_SANITIZE_NUMBER_INT);
+            if (!$relay_num)
+                $relay_num = 1;
+            $value = create_relay_switch($value, $relay_num, "", $hostname, $hostname);
+
+            break;
+        case 'tiny_relays';
+            $relay_select_mode = ($hostname == "selected" || $value == "selected");
+            if ($relay_select_mode)
+                return format_display_value($value, $display_name, $hostname, "relayname");
+            
+            if (is_array($value) && $value) {
+            $disp_var = "POWER";
+                $total_relays = count($value);
+                $html = "";
+                $attrib = "";
+                $html .= "<table class=\"tasmota_tiny_relay_table\">";
+                $row1 = array();
+                $row2 = array();
+                foreach ($value as $relay_number => $name) {
+                    
+                        $relay_number++;
+            $result_id = "{$hostname}_td_$disp_var$relay_number";
+                    $relay_class = "tasmota_relay_checkbox";
+                    $relay_checkbox_attrib_array = array(
+                        "tag_name" => "input",
+                        "type" => 'checkbox',
+                        "class" => $relay_class);
+                    if ($relay_select_mode) {
+                        $relay_checkbox_attrib['value'] = 1;
+                        $relay_checkbox_attrib_array['id'] = "select_all_relays_checkbox";
+                        $relay_checkbox_attrib_array['name'] = "select_all_relays";
+                        $relay_checkbox_attrib_array['onchange'] = "set_all_checkboxes_to_me(this)";
+
+                    } else {
+                        $relay_value = array(
+                            "hostname" => $hostname,
+                            "relay_number" => $relay_number,
+                            "FriendlyName" => $name);
+                        $relay_checkbox_attrib_array['value'] = htmlentities(JSON_encode($relay_value));
+
+                        $relay_checkbox_attrib_array['id'] = "{$hostname}_checkbox_relay_$relay_number";
+                        $relay_checkbox_attrib_array['name'] = "relays[]";
+                        $relay_checkbox_attrib_array['onclick'] =
+                            "add_relay_to_list(this.value,this.checked);";
+
+                    }
+                    $relay_checkbox_td_attrib = array("class"=>"tasmota_tiny_relay_select");
+                    $contents = create_element(false, $relay_checkbox_attrib_array);
+                    $contents = "<span>$contents<span class=\"tooltiptext\">Select $name</span></span>";
+                    $row1_td = create_td($contents, $relay_checkbox_td_attrib);
+
+
+                    $relay_results_attrib = array("id" => $result_id,"class"=>"tasmota_tiny_relay_result");
+                    
+                    $contents = create_relay_switch("switch", $relay_number, $name, $hostname, $hostname);
+                    $row2_td = create_td($contents, $relay_results_attrib);
+                    $row1[] = $row1_td;
+                    $row2[] = $row2_td;
+
+                }
+                $html .= "<tr>".implode("",$row1)."</tr>";
+                $html .= "<tr>".implode("",$row2)."</tr>";
+                $html .= "</table>";
+                $value = $html;
+
+            } else
+                $value = "[No Relays]";
+
+
+            break;
         case 'relayname':
             $relay_select_mode = ($hostname == "selected" || $value == "selected");
             if ($relay_select_mode)
                 $value = array(12345679 => "Selected Relays");
+            elseif (LIST_DISPLAY_MODE == "short")
+                return format_display_value($value, $display_name, $hostname, "tiny_relays");
             if (is_array($value) && $value) {
                 $td_attrib_index_array = TASMOTA_RELAY_TABLE_TD_INDEX_ATTRIBUTES;
+
+                $td_power_attrib_array = TASMOTA_RELAY_TABLE_TD_POWER_ATTRIBUTES;
+                $td_power_result_attrib_array = TASMOTA_RELAY_TABLE_TD_POWER_RESULT_ATTRIBUTES;
+                $td_result_attrib_array = TASMOTA_RELAY_TABLE_TD_RESULT_ATTRIBUTES;
+
                 if ($relay_select_mode) {
                     $table_attrib_array = TASMOTA_RELAY_TABLE_SELECT_ATTRIBUTES;
                     $th_attrib_array = TASMOTA_RELAY_TABLE_SELECT_TH_ATTRIBUTES;
                     $td_attrib_array = TASMOTA_RELAY_TABLE_SELECT_TD_ATTRIBUTES;
-                    $td_result_attrib_array = $td_attrib_array;
                 } else {
                     $table_attrib_array = TASMOTA_RELAY_TABLE_ATTRIBUTES;
                     $th_attrib_array = TASMOTA_RELAY_TABLE_TH_ATTRIBUTES;
                     $td_attrib_array = TASMOTA_RELAY_TABLE_TD_ATTRIBUTES;
-                    $td_result_attrib_array = TASMOTA_RELAY_TABLE_TD_RESULT_ATTRIBUTES;
                 }
                 $html = "";
                 $table_attrib = create_element_attributes($table_attrib_array);
@@ -539,10 +647,14 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
                             $value = isset($data[$e]) ? $data[$e] : "";
                             $$e = $value;
                         }
+                        $power_row = (strtolower(trim($index)) == "power") && $result_id;
 
                         $td_index_attrib = create_element_attributes($td_attrib_index_array);
                         $html .= "<tr><td $td_index_attrib><b>$index</b></td></tr>";
-                        $td_attrib = create_element_attributes($td_attrib_array);
+                        if ($power_row)
+                            $td_attrib = create_element_attributes($td_power_attrib_array);
+                        else
+                            $td_attrib = create_element_attributes($td_attrib_array);
                         $html .= "<tr><td $td_attrib><div>";
 
                         $caption_chars_row = 0;
@@ -556,15 +668,34 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
 
                             $button_count++;
                         }
-                        $html .= "</div></td></tr>";
+                        $html .= "</div></td>";
+
                         $id = array("id" => $result_id);
-                        $td_result_attrib = create_element_attributes($td_result_attrib_array, $id);
-                        if ($result_id)
-                            $html .= "<tr><td $td_result_attrib>&nbsp;</td></tr>";
-                        ;
+                        if ($power_row)
+                            $td_result_attrib = create_element_attributes($td_power_result_attrib_array, $id);
+                        else
+                            $td_result_attrib = create_element_attributes($td_result_attrib_array, $id);
+
+                        if ($result_id && $power_row)
+                            $html .= "<td $td_result_attrib><div class=\"$class\">" . create_relay_switch("switch",
+                                $relay_number, $name, $hostname, $hostname) . "</div></td>";
+                        elseif ($result_id)
+                            $html .= "</tr><tr><td $td_result_attrib>&nbsp;</td></tr>";
                     }
 
 
+                }
+                if($relay_select_mode)
+                {
+                    
+                        $td_index_attrib = create_element_attributes($td_attrib_index_array);
+                        $html .= "<tr><td $td_index_attrib><b>COMMAND</b></td></tr>";
+                        $html .= "<tr><td $td_index_attrib>Note: Will ignore specified relay number(s)</td></tr>";
+                            $td_attrib = create_element_attributes($td_attrib_array);
+                    
+                        $html .= "<tr><td $td_attrib><div class=\"tasmota_command_input\">";
+                        $html .= make_tasmota_cmnd_input(JAVASCRIPT_DUMP_ID_PREFIX,"relay");
+                        $html .= "</div></td><tr>";
                 }
                 $html .= "</table>";
                 $value = $html;
@@ -582,6 +713,64 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
     }
     $value = '<div class="' . $class . '">' . smart_nl2br($value) . '</div>' . $json_div;
     return $value;
+}
+function create_relay_switch($value, $relay_num, $friendly_name, $data_id, $return_id = false,
+    $close_popup = false)
+{
+    if ($friendly_name)
+        $friendly_name .= "<br />";
+    else
+        $friendly_name = "";
+    $img_off = stored_file("off.png");
+    $img_on = stored_file("on.png");
+    $img_switch = stored_file("switch.png");
+    if (is_numeric($value))
+        $value = $value ? "on" : "off";
+
+    if (is_string($value))
+        $value = strtolower($value);
+    $selected_mode = ($data_id == "selected");
+
+    switch ($value) {
+        case "selected":
+            $selected_mode = true;
+        case "start":
+        case "switch":
+            $cmnd = "POWER$relay_num";
+            $img_src = $img_switch;
+            $tooltip = "<b>Click to get relay $relay_num state</b><br />$friendly_name";
+            break;
+        case "on":
+            $cmnd = "POWER$relay_num 0";
+            $img_src = $img_on;
+            $tooltip = "<i>Relay $relay_num is ON </i><br />$friendly_name Click to turn off";
+            break;
+        case "off":
+            $cmnd = "POWER$relay_num 1";
+            $img_src = $img_off;
+            $tooltip = "<i>Relay $relay_num is OFF</i><br />$friendly_name Click to turn on";
+            break;
+        default:
+            return "?";
+    }
+    
+    if ($selected_mode)
+        $js_command = js_exec_selected($cmnd, true);
+    else
+        $js_command = js_exec_command($cmnd, $data_id, $return_id);
+    if ($close_popup)
+        $js_command .= " collapse_warnings();";
+    $attrib = array();
+    $attrib['src'] = $img_src;
+    $attrib['onclick'] = $js_command;
+    $attrib['style']['cursor'] = "pointer";
+    $img = create_img($attrib);
+
+    $html = '<span>' . $img . '<span class="tooltiptext">' . $tooltip .
+        '</span></span>';
+    return $html;
+
+
 }
 function format_vertical_display_name($display_name, $return_id = false, $show_button = true)
 {
@@ -703,25 +892,34 @@ function tr_classname($hostname)
 {
     return md5($hostname) . "_tr";
 }
+
+
+function dump_img($input1 = false, $input2 = false, $input3 = false, $input4 = false,
+    $input5 = false)
+{
+    $always_tagname = "img";
+    echo create_element(false, $input1, $input2, $input3, $input4, $input5, $always_tagname);
+
+}
 function dump_td($contents, $input1 = false, $input2 = false, $input3 = false, $input4 = false,
     $input5 = false)
 {
     $always_tagname = "td";
-    return dump_element($contents, $input1, $input2, $input3, $input4, $input5, $always_tagname);
+    echo dump_element($contents, $input1, $input2, $input3, $input4, $input5, $always_tagname);
 
 }
 function dump_div($contents, $input1 = false, $input2 = false, $input3 = false,
     $input4 = false, $input5 = false)
 {
     $always_tagname = "div";
-    return dump_element($contents, $input1, $input2, $input3, $input4, $input5, $always_tagname);
+    echo dump_element($contents, $input1, $input2, $input3, $input4, $input5, $always_tagname);
 
 }
 function dump_th($contents, $input1 = false, $input2 = false, $input3 = false, $input4 = false,
     $input5 = false)
 {
     $always_tagname = "th";
-    return dump_element($contents, $input1, $input2, $input3, $input4, $input5, $always_tagname);
+    echo dump_element($contents, $input1, $input2, $input3, $input4, $input5, $always_tagname);
 }
 
 function dump_element($contents, $input1 = false, $input2 = false, $input3 = false,
@@ -732,6 +930,14 @@ function dump_element($contents, $input1 = false, $input2 = false, $input3 = fal
 
 }
 
+
+function create_img($input1 = false, $input2 = false, $input3 = false, $input4 = false,
+    $input5 = false)
+{
+    $always_tagname = "img";
+    return create_element(false, $input1, $input2, $input3, $input4, $input5, $always_tagname);
+
+}
 function create_td($contents, $input1 = false, $input2 = false, $input3 = false,
     $input4 = false, $input5 = false)
 {
@@ -778,7 +984,10 @@ function create_element($contents, $input1 = false, $input2 = false, $input3 = f
     $attrib = array_merge($found_attributes, $attrib);
     $tag = isset($attrib['tag_name']) ? $attrib['tag_name'] : "td";
     $attrib_string = create_element_attributes($attrib);
-    return "<$tag $attrib_string>$contents</$tag>";
+    if ($contents === false)
+        return "<$tag $attrib_string />";
+    else
+        return "<$tag $attrib_string>$contents</$tag>";
 }
 function search_saved_attributes(&$input, &$cur_array, &$output)
 {

@@ -322,9 +322,27 @@ function js_cmnd_receive_reference()
 
     if (!isset($_GET['cmnd_reference']) || !($command_string = $_GET['cmnd_reference']))
         js_die("no cmnd_reference found", false);
+    
+    $is_relay = isset($_GET['is_relay']);
+        
     $array = cmnd_to_array($command_string);
     $fixed_string = construct_command_string($array);
-    if ($fixed_string != $command_string)
+    
+    if($is_relay)
+    {
+        $new_array = array();
+        foreach($array as $cmnd => $param)
+        {
+            
+            $cmnd = preg_replace('/[0-9]+/', '', $cmnd);
+            $cmnd .= 12345679;
+            $new_array[$cmnd]=$param;
+        }
+        $array = $new_array;
+        $ret = array('button'=>construct_command_string($array),'textbox'=>$fixed_string);
+        js_cmnd_reference("separate_insert", $return_id, $ret);
+    }
+    elseif ($fixed_string != $command_string)
         js_cmnd_reference("insert", $return_id, $fixed_string);
 
     $full = $tooltip = "";

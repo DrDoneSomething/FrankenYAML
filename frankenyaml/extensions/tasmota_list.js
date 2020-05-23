@@ -23,8 +23,11 @@ function tasmota_manual_command(return_id,mode,cmnd)
     var gets = Object.assign({},tasmota_exec_vars);
     var exfpath = gets['exfpath'];
     delete gets['exfpath'];
+    
     var id_prefix = return_id + "_tasmota_cmnd_";
     
+    
+    var js_output_id = return_id.replace("__relay__","")+"_td_js_output"
     var textbox = document.getElementById(id_prefix+"text");
     var checkbox = document.getElementById(id_prefix+"checkbox");
     var button = document.getElementById(id_prefix+"button");
@@ -52,6 +55,28 @@ function tasmota_manual_command(return_id,mode,cmnd)
     
     switch(mode)
     {
+        case 'get_reference_relay':
+            if(!checkbox.checked)
+            {
+                set_element_disabled(button,true);
+                return;
+            }
+            
+            if(!textbox.value)
+            {
+                js_output = "[command blank]";
+                break;
+            }
+            send_js = true;
+            gets['is_relay'] = 1;
+            gets['cmnd_reference'] = textbox.value;
+            set_element_disabled(button,true);
+            button.value = "";
+            checkbox.checked = false;
+            checkbox_tooltip.style.display = "Awaiting relay command parse by server...";
+        
+        
+        break;
         case 'get_reference':
             if(!checkbox.checked)
             {
@@ -73,9 +98,32 @@ function tasmota_manual_command(return_id,mode,cmnd)
         break;
         case 'insert':
             textbox.value = cmnd;
-            checkbox.checked = false;
-            set_element_disabled(button,true);
-            checkbox_tooltip.style.display = "initial";
+            button.value = cmnd;
+            checkbox.checked = true;
+            set_element_disabled(button,false);
+            checkbox_tooltip.style.display = "none";
+        break;
+        case 'separate_insert':
+        
+            var check_keys = ['button','textbox'];
+            for(var i in check_keys)
+            {
+                if(!(check_keys[i] in cmnd))
+                {
+                    console.log("FAIL: key "+check_keys[i]+" not found in cmnd ");
+                    console.log(cmnd);
+                    js_output = "[Error]";
+                    error = true;
+                    break;
+                }
+            }
+            textbox.value = cmnd['textbox'];
+            button.value = cmnd['button'];
+            checkbox.checked = true;
+            set_element_disabled(button,false);
+            checkbox_tooltip.style.display = "none";
+            
+            
         break;
         case 'receive_reference_no_tip':
             show_tooltip = false;
@@ -198,7 +246,7 @@ function tasmota_manual_command(return_id,mode,cmnd)
         if(tev['display_mode']=="short")
             master_dump_append(formatted);
         else
-            append_to_inner(return_id+"_td_js_output",formatted);
+            append_to_inner(js_output_id,formatted);
     }
     if(tooltip_output)
     {

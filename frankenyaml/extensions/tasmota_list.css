@@ -169,6 +169,41 @@ div.tasmota_buttons_area {
     overflow-x: hidden;
 }
 
+table.tasmota_tiny_relay_table {
+   border-collapse: collapse;
+    border: 1px solid black;
+    padding:2px;
+    margin:0px;
+    font-size:16px;
+    text-align:left;
+    color:white;
+    background-color:#808080;
+    
+}
+td.tasmota_tiny_relay_select {
+    max-width:34px;
+  border-top: none;
+  border-right: 1px solid black;
+  border-bottom: none;
+  border-left: 1px solid black;
+    border-collapse: collapse;
+    width: 34px;
+    min-width:34px;
+}
+td.tasmota_tiny_relay_result {
+    max-width:34px;
+    width: 34px;
+    min-width:34px;
+  border-top: none;
+  border-right: 1px solid black;
+  border-bottom: none;
+  border-left: 1px solid black;
+    border-collapse: collapse;
+    
+}
+td.tasmota_tiny_relay_result div {
+    overflow:hidden;
+}
 table.tasmota_relay_table tr {
     
 }
@@ -229,6 +264,18 @@ td.tasmota_relay_table_index_td {
 .tasmota_relay_result_td div {
     padding:5px 0px 5px 2px;
     
+}
+.tasmota_relay_power_result_td {
+    padding:0px;
+    margin:0px;
+    border: 1px solid black;
+   border-collapse: collapse;
+    border: 1px solid black;
+    
+}
+.tasmota_relay_power_result_td div.constrain_this span {
+    padding:0px;
+    margin:10px 0px 0px 0px;
 }
 
 

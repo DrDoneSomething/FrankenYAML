@@ -524,9 +524,22 @@ function set_element_disabled(input,state)
         return;
     }
     if(state)
+    {
         input.style.opacity = .3;
+        if(input.oldcursor != "no-drop")
+            input.oldcursor=input.style.cursor;
+        input.style.cursor= "no-drop";
+        
+    }
     else
+    {
         input.style.opacity = 1;
+        if(input.oldcursor != "no-drop")
+            input.style.cursor= input.oldcursor;
+        else
+            input.style.cursor= "pointer";
+        input.style.oldcursor = false;
+    }
         
     input.readOnly = state;
     input.disabled = state;
