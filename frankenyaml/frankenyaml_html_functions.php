@@ -774,11 +774,11 @@ function echo_head_redirect()
 function help_link($help, $help_title = "", $echo = true)
 {
     $url = get_full_url("CURRENT") . "?help=$help&help_title=$help_title";
-    $html = '<a href="javascript:dhtmlLoadScript(' . "'$url'" .
+    $html = '<a style="cursor:help;" href="javascript:dhtmlLoadScript(' . "'$url'" .
         ');"><img src="help.png" hspace="5" /></a>';
     if ($echo)
         echo $html;
-
+    return $html;
 
 }
 function get_protocol()
@@ -801,7 +801,11 @@ function help_on_load($help_string, $title = "Help")
     $html = rethelp_text($help_string);
     popup_msg_on_load($html, $title);
 }
-function popup_msg_on_load($msg, $title = "")
+function constrain_popup_text(&$text)
+{
+    $text = '<div class="popupmessage_constrain">' . $text . '</div>';
+}
+function popup_msg_on_load($msg, $title = "", $constrain_horizontally = true)
 {
     if ($title) {
         global $popup_title;
@@ -911,15 +915,35 @@ function error_state($set = false)
     }
     return defined("ERROR_STATE");
 }
-function rethelp_text($help_string, $html = true)
+function rethelp_text($help_string, $mode = 'html', $create_file_on_fail = true)
 {
+    if (!is_string($help_string) || !$help_string) {
+        if ($create_file_on_fail)
+            return ("ERROR: inputted help string was not a string..." . var_export($help_string, true));
+        return false;
+
+    }
+    switch ($mode) {
+        case 'array':
+            $html = true;
+            $return_array = true;
+            break;
+        default:
+            $html = $mode ? true : false;
+            $return_array = false;
+            break;
+    }
     $help_strings = explode("/", $help_string);
     $text = "";
     foreach ($help_strings as $help_string) {
-        if (strpos("..", $help_string) !== false)
-            return "ERROR: help string invalid: $help_string";
-        $fgc = @file_get_contents($p = HELP_DIR . "/$help_string.html");
+        if (strpos("..", $help_string) !== false || !$help_string)
+            return $create_file_on_fail ? "ERROR: help string invalid: $help_string" : false;
+        $p = HELP_DIR . "/$help_string.html";
+        if (!file_exists($p) && !$create_file_on_fail)
+            return false;
+        $fgc = @file_get_contents($p);
         if (!$fgc) {
+
             $result = @file_put_contents($p, HELP_FILE_PLACEHOLDER_TEXT);
             return ("ERROR: help file $p not found, " . ($result ? " CREATED" :
                 " COULD NOT BE CREATED"));
@@ -929,12 +953,21 @@ function rethelp_text($help_string, $html = true)
 
         $text .= $fgc . "<br />";
     }
+    $found_title = "";
+    $text = preg_replace_callback('(\{(.*?)\})is', "rethelp_callback_help_link", $text);
+    $title_matches = array();
 
+    if (preg_match("(\[title\](.*?)\[/title\])is", $text, $title_matches)) {
+        $found_title = $title_matches[1];
+        $text = preg_replace("(\[title\](.*?)\[/title\])is", "", $text);
+    }
+    constrain_popup_text($text);
     if ($html) {
         $text = str_replace(array(
             "\r\n",
             "\n",
             "\r"), " ", $text);
+
     } else {
         $breaks = array(
             "<br />",
@@ -944,9 +977,46 @@ function rethelp_text($help_string, $html = true)
         $text = htmlentities($text);
 
     }
+    if ($return_array)
+        return array('text' => $text, 'title' => $found_title);
+
+
     return $text;
 }
+function rethelp_callback_help_link($m)
+{
+    $inner_text = $m[1];
+    $input_parse = array(
+        "help_file",
+        "help_title",
+        "echo_contents");
+    $input = explode(":", $inner_text);
+    foreach ($input_parse as $key => $var) {
+        if (isset($input[$key])) {
+            $val = $input[$key];
+            if (strtolower($val) == "false")
+                $val = false;
+        } else
+            $val = "";
+        $$var = $val;
+    }
+    //
 
+    $result = rethelp_text($help_file, "array", false);
+    if (!$result)
+        return '{' . "help $help_file not found in" . '}';
+
+    if (!$help_title && $result['title'])
+        $help_title = $result['title'];
+    $help_text = $result['text'];
+
+    if ($echo_contents)
+        return $help_text;
+
+
+    return help_link($help_file, $help_title, false);
+
+}
 function retconst($var_name)
 {
     $var_name = strtoupper($var_name);

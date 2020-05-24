@@ -17,6 +17,13 @@ a {
     font-weight:bold;
     color: #2A5DB0;
 }
+div.popupmessage_constrain {
+    width: 650px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    
+  white-space: pre-wrap;
+}
 table tr td {
     background: #dadada;
 }
