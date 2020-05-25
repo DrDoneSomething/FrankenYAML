@@ -17,6 +17,8 @@ FrankenYAML
  
  Tasmota List
   - Scans your network for tasmota devices via web send!
+  - stores them for later
+  - accesses by hostname not IP (when loading from stored)
   - sends commands
   - does it in a quick and efficient way
   - easily customizable for people who love to do lots of changes to tasmota devices
@@ -30,4 +32,5 @@ Installation
 - Note: this saves data to text files so it must have permissions!
 
 Instructions
+- <a href="https://www.youtube.com/watch?v=4iPefBPq0Wo">FranekYAML</a>
 - <a href="https://www.youtube.com/watch?v=-sv9vlIR-7U">Tasmota List Basics, installation, advanced use</a>
