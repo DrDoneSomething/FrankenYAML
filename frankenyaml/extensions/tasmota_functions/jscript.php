@@ -356,15 +356,15 @@ function js_exec_selected($array, $relay = false, $alt_command_var = false)
     $js_command .= "($command_string);";
     return $js_command;
 }
-function js_exec_command($array, $data_id, $return_id, $alt_command_var = false)
+function js_exec_command($array, $data_id, $return_id, $alt_command_var = false,$force_scan_ip = false)
 {
 
     $command_string = addslashes(construct_command_string($array));
     $data_id_js = addslashes($data_id);
     $return_id_js = addslashes(js_format_return_id($return_id));
 
-
-    $js_command = (SCAN_MODE ? "exec_tasmota_ip" : "exec_tasmota_hostname");
+    $get_by_ip = $force_scan_ip?true:SCAN_MODE;
+    $js_command = ($get_by_ip ? "exec_tasmota_ip" : "exec_tasmota_hostname");
 
     if ($alt_command_var)
         $command_string = $alt_command_var;
@@ -424,7 +424,7 @@ function time_since($time)
 function js_pass_exec_vars()
 {
     global $device_password, $device_username;
-    $list_name = list_name();
+    $list_name = list_name(false);
     $vals = array(
         'list_name' => $list_name,
         "exfpath" => JS_PATH,
@@ -438,13 +438,13 @@ function js_pass_exec_vars()
 
     echo "\nvar tasmota_exec_vars = " . '{}' . ";\n";
     foreach ($vals as $key => $value) {
-        $value = addslashes($value);
-        echo "\ntasmota_exec_vars['$key']='$value';\n";
+        $value = JSON_encode($value);
+        echo "\ntasmota_exec_vars['$key']=$value;\n";
     }
     echo "\nvar tasmota_device_vars = " . '{}' . ";\n";
     foreach ($device_vals as $key => $value) {
-        $value = addslashes($value);
-        echo "\ntasmota_device_vars['$key']='$value';\n";
+        $value = JSON_encode($value);
+        echo "\ntasmota_device_vars['$key']=$value;\n";
     }
     echo "\nvar js_master_dump_id ='" . JAVASCRIPT_DUMP_ID . "';\n";
 

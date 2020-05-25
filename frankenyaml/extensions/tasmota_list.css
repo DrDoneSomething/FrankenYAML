@@ -414,7 +414,6 @@ div.tasmota_select_relay div  {
 .wrap_select_checkbox {
     display:inline-block;
     position:relative;
-    overflow:hidden;
     white-space:pre-wrap;
     height:inherit;
     

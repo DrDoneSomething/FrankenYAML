@@ -25,8 +25,7 @@ function hijack_page()
     if (!CALLED_FROM_YAML_HELPER)
         return "hard_redirect";
 
-    define("IN_JS", false);
-
+    in_js(false);
     if (!$database_built)
         return hijack_start_page();
     return "All Gravy!";
@@ -43,16 +42,23 @@ function hijack_tasmota_no_login()
 
 function hard_redirect()
 {
+    $list_name = "";
+    if(($list_name = list_name(false)))
+    {
+        $list_name = "&list_name=".urlencode($list_name);
+    }
     if(in_js())
     {
-        js_dump_line("window.location.href= '".HOME_URL."';");
+        js_dump_line("window.location.href= '".HOME_URL."$list_name';");
         exit;
     }
     $this_page = get_full_url("CURRENT");
     $dir_name = basename(dirname($this_page));
     list($parent, $crap) = explode($dir_name, $this_page, 2);
-    $url = $parent . "?extension=Tasmota%20List";
-
+    $ext_name = gv_or_blank("extension", "Tasmota List");
+    $ext_name = urlencode($ext_name);
+    $url = $parent . "?extension=$ext_name$list_name";
+    
     header("Location: $url");
 
     exit;

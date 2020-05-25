@@ -6,17 +6,27 @@ function hijack_start_page()
     echo '<tr><th class="config_name" colspan="' . 1 . '">LISTS</th></tr>';
     foreach (LIST_DB_KEYS as $key => $label) {
         $url = $_SERVER['REQUEST_URI'] . "&list_name=$key";
-        echo '<tr><td><a href="' . $url . '">' .
-            $label . '</a>';
-            if($key != TASMOTA_IP_SCAN_LIST)
-                echo ' [<a href="'.$url.'&display_mode=short">short</a>]';
+        echo '<tr><td><a href="' . $url . '">' . $label . '</a>';
+        if ($key != TASMOTA_IP_SCAN_LIST)
+            echo ' [<a href="' . $url . '&display_mode=short">short</a>]';
         echo '</td></tr>';
     }
     echo '</table>';
-    display_tasmota_login();
+    display_bottom_table();
     return "return";
 }
+function display_bottom_table()
+{
+    form_close();
+    echo '<table><tr><td valign="top">';
+    display_add_tasmota_box();
 
+    echo '</td><td width="30">&nbsp;</td><td valign="top">';
+
+    display_tasmota_login();
+
+    echo "</td></tr></table>";
+}
 
 function display_tasmota_login()
 {
@@ -88,8 +98,8 @@ function display_add_tasmota_box()
         "type" => "submit",
         "form" => "scan_ip_form",
         "name" => "list_name",
-        "js_command"=>"",
-        "id"=>"scan_ip_form_button",
+        "js_command" => "",
+        "id" => "scan_ip_form_button",
         "value" => TASMOTA_IP_SCAN_LIST);
 
     form_open(array(
@@ -113,27 +123,27 @@ function display_add_tasmota_box()
     form_close();
 
     echo '</td><td valign="top">';
-    
+
     form_open(array(
         "method" => "get",
         "action" => "./",
         "id" => "single_ip_form"));
-        
+
     ihide_these_vars($gets);
     echo '<table class="multi_col_config">';
     echo '<tr><th>Enter Hostname or IP</th></tr>';
     echo '<tr><td>';
-    itext("single_ip", $justone_ip, " ","ex: 192.168.1.52", "single_ip_textbox");
-    
+    itext("single_ip", $justone_ip, " ", "ex: 192.168.1.52", "single_ip_textbox");
+
     $button_attributes = array(
         "caption" => "Go",
         "type" => "submit",
         "form" => "single_ip_form",
         "name" => "list_name",
-        "js_command"=>"",
-        "id"=>"single_ip_form_button",
+        "js_command" => "",
+        "id" => "single_ip_form_button",
         "value" => TASMOTA_IP_SCAN_LIST);
-    
+
     echo make_button($button_attributes);
     echo '</td></tr>';
     echo '</table>';

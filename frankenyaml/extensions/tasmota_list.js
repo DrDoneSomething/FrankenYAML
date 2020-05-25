@@ -457,7 +457,7 @@ function exec_tasmota_relays_hostname(command_string)
 }
 function exec_tasmota_relays(command_string,use_ip)
 {
-    var placeholder_num = 12345679;
+    var placeholder_num = 123456789;
     if(command_string.indexOf(placeholder_num) == -1)
     {
         console.log("ERROR: Could not exec command on relays, placeholder "+placeholder_num+

@@ -70,7 +70,11 @@ function tasmota_has_reference($cmnd, $return_type = "full", $alt_value = false)
         "mqtthost",
         "mqttuser",
         "mqttpassword");
-    $withnumber = array("setoption","ping","ipaddress","password");
+    $withnumber = array(
+        "setoption",
+        "ping",
+        "ipaddress",
+        "password");
 
     $without_value = array_fill_keys($without_value, "without_value");
     $with_scrap_number = array_fill_keys($with_scrap_number, "scrap_number");
@@ -97,6 +101,7 @@ function tasmota_has_reference($cmnd, $return_type = "full", $alt_value = false)
     $ret = array(
         "name" => $found,
         "set" => $value,
+        "found"=> $found,
         "value_desc" => $value,
         "value_error" => false,
         "general_error" => false,
@@ -135,9 +140,8 @@ function tasmota_has_reference($cmnd, $return_type = "full", $alt_value = false)
             $ret['name'] = $option;
             if ($value !== false) {
                 $ret['set'] = "<b>$value</b>";
-                if(!$data['options'])
-                {
-                    $ret['value_desc'] ="";
+                if (!$data['options']) {
+                    $ret['value_desc'] = "";
                     break;
                 }
                 if (isset($data['options'][$value])) {
@@ -151,7 +155,8 @@ function tasmota_has_reference($cmnd, $return_type = "full", $alt_value = false)
 
             break;
         case "scrap_number":
-            $cmnd = preg_replace('/[0-9]+/', '', $cmnd);
+            $name = str_replace(RELAY_PLACEHOLDER, " (Selected Relays)", $cmnd);
+            $ret['name'] = $name;
         case "with_value":
             $ref = tasmota_reference($found);
             $ret['desc'] = $ref['description'];
@@ -186,7 +191,10 @@ function tasmota_has_reference($cmnd, $return_type = "full", $alt_value = false)
             $text = "";
             if (!$ret['set'])
                 $text .= "Query ";
-            $text .= "<b>$cmnd</b>";
+            if ($ret['found'])
+                $text .= "<b>{$ret['name']}</b>";
+            else
+                $text .= "<b>$cmnd</b>";
             if ($ret['set']) {
                 $text .= " set to <i>" . $ret['set'] . "</i><br />";
                 if ($ret['value_error'])
@@ -197,6 +205,7 @@ function tasmota_has_reference($cmnd, $return_type = "full", $alt_value = false)
             $text .= "<br />" . $ret['desc'];
             $ret['text'] = $text;
             $ret['ref'] = $ref;
+            $ret['cmnd'] = $cmnd;
             $ret['found'] = $found;
             return $ret;
         case "ref":
@@ -312,7 +321,7 @@ function tasmota_reference($reference)
             $options = array("disable use of MQTT retain flag (default)",
                     "enable MQTT retain flag on switch press");
             $return['options'] = $options;
-            $return['description'] = "MQTT retain button state";
+            $return['description'] = "MQTT retain switch state";
             break;
         case "buttonretain":
             $options = array("disable use of MQTT retain flag (default)",
@@ -401,11 +410,11 @@ function tasmota_reference($reference)
                     'default' => "");
             break;
         case "websend":
-            $return['description'] = "Send a command to Tasmota host over http. \n"
-            ."If a command starts with a \ it will be used as a link.\n".
-                "[-host-:-port-,-user-:-password-] -command-".
-                "example 1: [ip] POWER1 ON sends http://[ip]/cm?cmnd=POWER1 ON\n".
-                "example 2: WebSend [myserver.com] /fancy/data.php?log=1234 ".
+            $return['description'] = "Send a command to Tasmota host over http. \n" .
+                "If a command starts with a \ it will be used as a link.\n" .
+                "[-host-:-port-,-user-:-password-] -command-" .
+                "example 1: [ip] POWER1 ON sends http://[ip]/cm?cmnd=POWER1 ON\n" .
+                "example 2: WebSend [myserver.com] /fancy/data.php?log=1234 " .
                 " -&gt; sends http://myserver.com/fancy/data.php?log=1234";
             break;
         case "setoption":

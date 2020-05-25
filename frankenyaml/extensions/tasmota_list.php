@@ -357,14 +357,6 @@ echo '</tr>';
 echo '</table><br /><hr /><br />';
 //$rads = array("192.168.3." => "192.168.3.", "192.168.1." => "192.168.1.");
 //iradio_array("ip_prefix", $rads, "192.168.3.");
-form_close();
-echo '<table><tr><td valign="top">';
-display_add_tasmota_box();
-
-echo '</td><td width="30">&nbsp;</td><td valign="top">';
-
-display_tasmota_login();
-
-echo "</td></tr></table>";
+display_bottom_table();
 
 ?>

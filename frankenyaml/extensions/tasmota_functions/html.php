@@ -19,7 +19,8 @@ function command_button_selected($array, $caption, $title = false, $close_popup 
     if ($close_popup)
         $js_command .= " collapse_warnings();";
 
-    $button_id = "selected_send_$caption" . "_button";
+    $id_caption=preg_replace( '/[\W]/', '', $caption);
+    $button_id = "selected_send_$id_caption" . "_button";
 
     if (!$title) {
         $ref = tasmota_has_reference($array, "tooltip");
@@ -58,8 +59,10 @@ function command_button($array, $caption, $data_id, $return_id, $title = false,
     $js_command = js_exec_command($array, $data_id, $return_id);
     if ($close_popup)
         $js_command .= " collapse_warnings();";
-
-    $button_id = $data_id . "_$caption" . "_button";
+    $id_caption=preg_replace( '/[\W]/', '', $caption);
+    
+    $button_id = $data_id . "_$id_caption" . "_button";
+    $button_id = htmlentities($button_id);
     if (!$title) {
         $ref = tasmota_has_reference($array, "tooltip");
         if ($ref)
@@ -69,13 +72,10 @@ function command_button($array, $caption, $data_id, $return_id, $title = false,
 
     }
 
-    $tooltip = ' title="' . htmlentities(str_replace("\n", " ", $title)) . '" ';
 
     $button = make_button($button_id, $js_command, $caption, $title, false);
     return $button;
-    return '<span><button  class="button_list" id="' . $button_id .
-        '" type="button" onclick="' . $js_command . '">' . $caption .
-        '</button><span class="tooltiptext">' . $title . '</span></span>';
+    
 
 }
 function popup_select_buttons($variable = array(), $breakpoint = false, $output_type =
@@ -278,31 +278,29 @@ function make_button($button_id_or_input, $js_command = false, $caption = false,
 //command_button($array, $caption, $data_id, $return_id, $title = false, $close_popup = false)
 function make_tasmota_cmnd_input($data_id, $return_id = false, $close_popup = false)
 {
-    
-    $select_mode =($data_id == JAVASCRIPT_DUMP_ID_PREFIX);
-    $is_relay = $return_id=="relay";
-    
-    
-    
-    if($is_relay)
-    {
+
+    $select_mode = ($data_id == JAVASCRIPT_DUMP_ID_PREFIX);
+    $is_relay = $return_id == "relay";
+
+
+    if ($is_relay) {
         $data_id .= "__relay__";
         $return_id = $data_id;
     }
     if (!$return_id || $is_relay)
         $return_id = $data_id;
-        
-        
+
+
     $id_start = "{$data_id}_tasmota_cmnd_";
     $return_id_slashed = addslashes($return_id);
 
     $textbox_js = "tasmota_manual_command('$return_id_slashed','textbox_update',this.value); return true;";
-    
-    if($is_relay)
+
+    if ($is_relay)
         $checkbox_js = "tasmota_manual_command('$return_id_slashed','get_reference_relay',this.value); return true;";
     else
         $checkbox_js = "tasmota_manual_command('$return_id_slashed','get_reference',this.value); return true;";
-    
+
     if ($select_mode)
         $button_js = js_exec_selected("not used", $is_relay, "this.value");
     else
@@ -394,6 +392,7 @@ function make_select_input($hostname)
 
     $select = '<input type="checkbox" name="hostnames[]" value="' . $hostname .
         '" onclick="add_hostname_to_list(this.value, this.checked)" class="hostname" />';
+    $select .= "<br />".make_refresh_icon($hostname);
     $select = '<div class="wrap_select_checkbox">' . $select . '</div> ';
     return $select;
 }
@@ -479,9 +478,9 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
             $relay_select_mode = ($hostname == "selected" || $value == "selected");
             if ($relay_select_mode)
                 return format_display_value($value, $display_name, $hostname, "relayname");
-            
+
             if (is_array($value) && $value) {
-            $disp_var = "POWER";
+                $disp_var = "POWER";
                 $total_relays = count($value);
                 $html = "";
                 $attrib = "";
@@ -489,9 +488,9 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
                 $row1 = array();
                 $row2 = array();
                 foreach ($value as $relay_number => $name) {
-                    
-                        $relay_number++;
-            $result_id = "{$hostname}_td_$disp_var$relay_number";
+
+                    $relay_number++;
+                    $result_id = "{$hostname}_td_$disp_var$relay_number";
                     $relay_class = "tasmota_relay_checkbox";
                     $relay_checkbox_attrib_array = array(
                         "tag_name" => "input",
@@ -516,22 +515,23 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
                             "add_relay_to_list(this.value,this.checked);";
 
                     }
-                    $relay_checkbox_td_attrib = array("class"=>"tasmota_tiny_relay_select");
+                    $relay_checkbox_td_attrib = array("class" => "tasmota_tiny_relay_select");
                     $contents = create_element(false, $relay_checkbox_attrib_array);
                     $contents = "<span>$contents<span class=\"tooltiptext\">Select $name</span></span>";
                     $row1_td = create_td($contents, $relay_checkbox_td_attrib);
 
 
-                    $relay_results_attrib = array("id" => $result_id,"class"=>"tasmota_tiny_relay_result");
-                    
+                    $relay_results_attrib = array("id" => $result_id, "class" =>
+                            "tasmota_tiny_relay_result");
+
                     $contents = create_relay_switch("switch", $relay_number, $name, $hostname, $hostname);
                     $row2_td = create_td($contents, $relay_results_attrib);
                     $row1[] = $row1_td;
                     $row2[] = $row2_td;
 
                 }
-                $html .= "<tr>".implode("",$row1)."</tr>";
-                $html .= "<tr>".implode("",$row2)."</tr>";
+                $html .= "<tr>" . implode("", $row1) . "</tr>";
+                $html .= "<tr>" . implode("", $row2) . "</tr>";
                 $html .= "</table>";
                 $value = $html;
 
@@ -543,7 +543,7 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
         case 'relayname':
             $relay_select_mode = ($hostname == "selected" || $value == "selected");
             if ($relay_select_mode)
-                $value = array(12345679 => "Selected Relays");
+                $value = array(RELAY_PLACEHOLDER => "Selected Relays");
             elseif (LIST_DISPLAY_MODE == "short")
                 return format_display_value($value, $display_name, $hostname, "tiny_relays");
             if (is_array($value) && $value) {
@@ -612,7 +612,7 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
                     $all_elements[] = "buttons";
                     foreach ($extra_commands as $cmnd => $disp_var) {
                         $no_result = $relay_select_mode;
-
+                        //[num]
                         if (strpos($cmnd, "[num]") !== false) {
                             list($index, $wutever) = explode("[num]", $cmnd);
                             $cmnd = str_replace("[num]", $relay_number, $cmnd);
@@ -623,9 +623,9 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
                         }
                         if ($relay_select_mode) {
                             $caption = $disp_var;
-                            $button = command_button_selected($cmnd, $caption, "$index (selected)", false, true);
+                            $button = command_button_selected($cmnd, $caption, false, false, true);
                         } else {
-                            $caption = "$disp_var$relay_number";
+                            $caption = "$disp_var";
                             $button = command_button($cmnd, $caption, $hostname, $hostname);
                         }
 
@@ -685,17 +685,16 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
 
 
                 }
-                if($relay_select_mode)
-                {
-                    
-                        $td_index_attrib = create_element_attributes($td_attrib_index_array);
-                        $html .= "<tr><td $td_index_attrib><b>COMMAND</b></td></tr>";
-                        $html .= "<tr><td $td_index_attrib>Note: Will ignore specified relay number(s)</td></tr>";
-                            $td_attrib = create_element_attributes($td_attrib_array);
-                    
-                        $html .= "<tr><td $td_attrib><div class=\"tasmota_command_input\">";
-                        $html .= make_tasmota_cmnd_input(JAVASCRIPT_DUMP_ID_PREFIX,"relay");
-                        $html .= "</div></td><tr>";
+                if ($relay_select_mode) {
+
+                    $td_index_attrib = create_element_attributes($td_attrib_index_array);
+                    $html .= "<tr><td $td_index_attrib><b>COMMAND</b></td></tr>";
+                    $html .= "<tr><td $td_index_attrib>Note: Will ignore specified relay number(s)</td></tr>";
+                    $td_attrib = create_element_attributes($td_attrib_array);
+
+                    $html .= "<tr><td $td_attrib><div class=\"tasmota_command_input\">";
+                    $html .= make_tasmota_cmnd_input(JAVASCRIPT_DUMP_ID_PREFIX, "relay");
+                    $html .= "</div></td><tr>";
                 }
                 $html .= "</table>";
                 $value = $html;
@@ -713,6 +712,33 @@ function format_display_value($value, $display_name, $hostname = false, $value_n
     }
     $value = '<div class="' . $class . '">' . smart_nl2br($value) . '</div>' . $json_div;
     return $value;
+}
+function make_refresh_icon($data_id, $return_id=false, $cmnd = false, $close_popup=false)
+{
+    if(!$return_id)
+        $return_id = $data_id;
+        
+    if($cmnd)
+    {
+        $tooltip = "Refresh ".construct_command_string($cmnd);
+    }
+    else
+    {
+        $cmnd = DEFAULT_CMND;
+        $tooltip = "Refresh $data_id";
+        
+    }
+    $js_command = js_exec_command($cmnd,$data_id,$return_id,false,true);
+    $img_src = stored_file("refresh.png");
+    $attrib = array();
+    $attrib['src'] = $img_src;
+    $attrib['onclick'] = $js_command;
+    $attrib['style']['cursor'] = "pointer";
+    $img = create_img($attrib);
+
+    $html = '<span>' . $img . '<span class="tooltiptext">' . $tooltip .
+        '</span></span>';
+    return $html;
 }
 function create_relay_switch($value, $relay_num, $friendly_name, $data_id, $return_id = false,
     $close_popup = false)
@@ -753,7 +779,7 @@ function create_relay_switch($value, $relay_num, $friendly_name, $data_id, $retu
         default:
             return "?";
     }
-    
+
     if ($selected_mode)
         $js_command = js_exec_selected($cmnd, true);
     else

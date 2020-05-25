@@ -335,7 +335,7 @@ function js_cmnd_receive_reference()
         {
             
             $cmnd = preg_replace('/[0-9]+/', '', $cmnd);
-            $cmnd .= 12345679;
+            $cmnd .= RELAY_PLACEHOLDER;
             $new_array[$cmnd]=$param;
         }
         $array = $new_array;
@@ -448,6 +448,11 @@ function js_exec_tasmota_receiver()
 
 
     if ($fail) {
+        if(SCAN_MODE)
+        {
+            $ip = db_get_val($hostname,"ip_address");
+            
+        }
         if (isset($_GET["attempt_number"])) {
             $return = 'FAILED TO CONNECT: ATTEMPT # ' . $_GET["attempt_number"] . "<br />$url<br />Exception: $exception";
         } else
