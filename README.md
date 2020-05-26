@@ -12,7 +12,7 @@ BSD license
   - Icing on the cake: You can easily create an account which will automatically save changes for quick editing later.
       - otherwise transfers the data from panel to panel via exported _POST_ values
       - therefore, unless you create an account, your config is stored nowhere but your browser RAM, for better security (don't close that browser window!)
-  - <h3><a href="https://drdonesomething.com/FrankenYAML/">Try FrankenYAML</a></h3>
+  - <h3><a href="https://drdonesomething.com/FrankenYAML/">Try FrankenYAML Online</a></h3>
       - Note: This version has login disabled and no Tasmota List for obvious reasons.
  
  <h2>Tasmota List</h2>
