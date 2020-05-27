@@ -147,7 +147,8 @@ function encryption_key($set = false)
 function post_logout()
 {
     if (pv_or_blank('logout')) {
-        setC(false);
+        setC("user", "");
+        setC("passwordmd5", "");
         parse_error("You are now logged out", true);
         return true;
     }
