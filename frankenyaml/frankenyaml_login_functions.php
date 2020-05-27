@@ -43,7 +43,8 @@ function login_button()
 {
     if(auth())
     {
-        isubmit("new_mode", "login", "Log Out", false);
+        $multivar = array("new_mode"=>"login","new_login_mode"=>"login","logout"=>"yep");
+        isubmit_multi($multivar,"Log Out");
     }
     else
     {

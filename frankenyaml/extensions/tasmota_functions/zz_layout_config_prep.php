@@ -2,6 +2,25 @@
 
 defined("IN_YAML_HELPER") || die("not in helper");
 
+$clean_buttons = array();
+foreach($command_buttons as $cm => $cap)
+{
+    $result = array();
+    if(isset($clean_buttons[$cap]))
+    {
+        $result = $clean_buttons[$cap];
+        $ct = count($clean_buttons[$cap])+1;
+        $command_buttons[$cm] = "$cap ($ct)";
+    }
+    $result[] = $cm;
+    $clean_buttons[$cap] = $result;
+}
+
+
+
+
+
+define("COMMAND_BUTTONS", $command_buttons);
 define('RELAY_COMMANDS', $relay_commands);
 if ($list_display_mode == "full")
     $display_values = $display_values_FULL;

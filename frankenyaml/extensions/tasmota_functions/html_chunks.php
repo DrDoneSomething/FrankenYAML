@@ -48,9 +48,10 @@ function display_tasmota_login()
     echo '</td></tr>';
 
     echo '<tr><td>';
-
-    $js_url = JS_PATH . "?tasmota_login='+document.getElementById('tasmota_js_login').value+'";
+    $js_url = js_pass_url();
+    $js_url .= "tasmota_login='+document.getElementById('tasmota_js_login').value+'";
     $js_url .= "&tasmota_password='+document.getElementById('tasmota_js_password').value+'";
+    
     $tooltip = ' title="Set Cookie" ';
     $caption = "Set Login/cookie";
     $button_id = "set_tasmota_login_button";

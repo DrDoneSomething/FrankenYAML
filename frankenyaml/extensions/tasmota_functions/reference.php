@@ -312,22 +312,22 @@ function tasmota_reference($reference)
             $return['description'] = "Various Tasmota Status Info";
             break;
         case "powerretain":
-            $options = array("OFF: Disable MQTT Retain (default)",
-                    "ON: Enable MQTT retain retain");
+            $options = array("OFF: Disable MQTT power Retain (default)",
+                    "ON: Enable MQTT power retain retain (recommended by Rob)");
             $return['options'] = $options;
-            $return['description'] = "MQTT retain switch state";
+            $return['description'] = "MQTT retain power state - Relay state is retained in MQTT server, will override current relay state on connect.";
             break;
         case "switchretain":
-            $options = array("disable use of MQTT retain flag (default)",
+            $options = array("disable use of MQTT retain flag (default) (recommended by Rob)",
                     "enable MQTT retain flag on switch press");
             $return['options'] = $options;
-            $return['description'] = "MQTT retain switch state";
+            $return['description'] = "MQTT retain switch state - Switch state is retained in MQTT server, will override current switch state on connect.";
             break;
         case "buttonretain":
-            $options = array("disable use of MQTT retain flag (default)",
+            $options = array("disable use of MQTT retain flag (default) (recommended by Rob)",
                     "enable MQTT retain flag on button press");
             $return['options'] = $options;
-            $return['description'] = "MQTT Power Retain Power State on status update";
+            $return['description'] = "MQTT  Retain Button State  - Button state is retained in MQTT server, will override current button state on connect.";
             break;
         case "ap":
             $options = array(1 => "WiFi Access Point 1", 2 => "WiFi Access Point 2");

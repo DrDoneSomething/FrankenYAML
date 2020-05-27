@@ -23,11 +23,14 @@ function js_tasmota_login()
     setC("tasmota_password", $tasmota_password);
     saveC();
     if ($clear_tasmota)
-        js_die("SUCCESS: Tasmota Login Information CLEARED", false, true);
+        js_alert("SUCCESS: Tasmota Login Information CLEARED");
     else
-        js_die("SUCCESS: Tasmota login Set. Note that password was saved in plain text in your cookies.", false, true);
-
-
+        js_alert("SUCCESS: Tasmota login Set. Note that password was saved in plain text in your cookies.");
+    global $device_password, $device_username;
+    $device_password=$tasmota_password;
+    $device_username=$tasmota_login;
+    js_pass_exec_vars();
+    js_refresh_list();
     exit;
 }
 

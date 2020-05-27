@@ -556,7 +556,7 @@ function master_dump_append(text) {
     var result = false;
     while(true)
     {
-        if(!js_master_dump_id)
+        if(typeof js_master_dump_id == 'undefined')
             break;
         
         var dump = document.getElementById(js_master_dump_id);

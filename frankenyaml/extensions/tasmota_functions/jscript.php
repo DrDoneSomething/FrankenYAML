@@ -75,6 +75,33 @@ function js_format_return_id($input, $append = "", $append_prefix = "")
     return implode(JAVASCRIPT_ID_DELIMITER, $clean_input);
 
 }
+function js_pass_url($new_values_array = false, $excempt_values = array(
+    'tasmota_login',
+    'tasmota_password',
+    'popup_select',
+    'remove_hostname',
+    'exec_tasmota',
+    'cmnd_reference'))
+{
+    if (!$new_values_array)
+        $new_values_array = array();
+    if (!is_array($excempt_values))
+        $excempt_values = array($excempt_values);
+    $excempt_values = array_flip($excempt_values);
+
+    $url = JS_PATH . "?";
+    foreach ($_GET as $key => $val) {
+        if (isset($new_values_array[$key])) {
+            $val = $new_values_array[$key];
+            continue;
+        } elseif (isset($excempt_values[$key]))
+            continue;
+
+        $url .= "$key=$val&";
+
+    }
+    return $url;
+}
 function js_append_start($return_id, $append)
 {
     js_start();
@@ -356,14 +383,15 @@ function js_exec_selected($array, $relay = false, $alt_command_var = false)
     $js_command .= "($command_string);";
     return $js_command;
 }
-function js_exec_command($array, $data_id, $return_id, $alt_command_var = false,$force_scan_ip = false)
+function js_exec_command($array, $data_id, $return_id, $alt_command_var = false,
+    $force_scan_ip = false)
 {
 
     $command_string = addslashes(construct_command_string($array));
     $data_id_js = addslashes($data_id);
     $return_id_js = addslashes(js_format_return_id($return_id));
 
-    $get_by_ip = $force_scan_ip?true:SCAN_MODE;
+    $get_by_ip = $force_scan_ip ? true : SCAN_MODE;
     $js_command = ($get_by_ip ? "exec_tasmota_ip" : "exec_tasmota_hostname");
 
     if ($alt_command_var)
@@ -425,6 +453,28 @@ function js_pass_exec_vars()
 {
     global $device_password, $device_username;
     $list_name = list_name(false);
+    if (!$list_name) {
+        js_log("FYI: Could not pass tasmota_exec_vars, " .
+            "they are not set yet or this function was called from the wrong page");
+        return;
+    }
+    $required_constants = array(
+        "JS_PATH",
+        "LIST_DISPLAY_MODE",
+        "DEFAULT_CMND",
+        "JAVASCRIPT_DUMP_ID",
+        "SCAN_MODE");
+    $const_fail = false;
+    foreach ($required_constants as $const) {
+        if (!defined($const)) {
+            $const_fail = true;
+            js_log("FATAL ERROR: constant $const not defined (yet?) " .
+                "could not pass var to javascript");
+        }
+    }
+    if ($const_fail)
+        return;
+
     $vals = array(
         'list_name' => $list_name,
         "exfpath" => JS_PATH,
@@ -435,6 +485,9 @@ function js_pass_exec_vars()
         "password" => $device_password);
 
     js_start();
+    echo "\nvar tasmota_scan_mode = " . JSON_encode(SCAN_MODE) . ";\n";
+
+    echo "\nvar tasmota_default_cmnd = " . JSON_encode(DEFAULT_CMND) . ";\n";
 
     echo "\nvar tasmota_exec_vars = " . '{}' . ";\n";
     foreach ($vals as $key => $value) {
@@ -450,6 +503,11 @@ function js_pass_exec_vars()
 
     js_end();
 
+}
+function js_refresh_list()
+{
+    $js = "tasmota_refresh_list();";
+    js_dump_line($js);
 }
 function js_dump_line($input)
 {

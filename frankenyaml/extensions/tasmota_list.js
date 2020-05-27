@@ -9,6 +9,36 @@ var tasmota_all_click_buttons = [];
 var tasmota_exec_queue = [];
 var tasmota_queue_timer = false;
 var tasmota_queue_spacing = 100;
+function tasmota_refresh_list()
+{
+    if(typeof tasmota_exec_vars == 'undefined')
+    {
+        js_log("Login Apparently updated, luckily we do not appear to be displaying anything yet");
+        return;
+    }
+    if(typeof tasmota_default_cmnd == 'undefined')
+    {
+        js_log("Cannot refresh list, tasmota_default_cmnd not found");
+        return;
+    }
+    if(typeof tasmota_scan_mode == 'undefined')
+    {
+        js_log("Cannot refresh list, tasmota_scan_mode not found");
+        return;
+        
+    }
+    if("list_name" in tasmota_exec_vars)
+    {
+        console.log("Login Change detected, refreshing tasmotas");
+        var master_checkbox = document.getElementById("select_all_hostnames_checkbox");
+        if(!master_checkbox)
+            console.log("Could not update tasmotas, 'select all' checkbox is not found");
+        master_checkbox.checked = true;
+        set_all_checkboxes_to_me(master_checkbox);
+        exec_tasmota_selected(tasmota_default_cmnd,tasmota_scan_mode);
+    }
+    
+}
 function tasmota_manual_command(return_id,mode,cmnd)
 {
     
@@ -23,6 +53,9 @@ function tasmota_manual_command(return_id,mode,cmnd)
     var gets = Object.assign({},tasmota_exec_vars);
     var exfpath = gets['exfpath'];
     delete gets['exfpath'];
+    
+    
+    
     
     var id_prefix = return_id + "_tasmota_cmnd_";
     
@@ -587,8 +620,14 @@ function exec_tasmota(data_id,return_id,command_string,use_ip)
             error = "no command_string found in tasmota var ";
         
         var address = (use_ip)?ip:hostname.toLowerCase();
-        
-        var tasmota_url = protocol+"://"+address+"/cm?user="+username+"&password="+password+"&cmnd="+command_string_encoded;
+        var login = "";
+        if(username)
+            login += "&user="+username;
+        if(password)
+            login += "&password="+password;
+        if(!login)
+            js_log("Warning: No tasmota login/password set in cookie (or a programming error on my part).")
+        var tasmota_url = protocol+"://"+address+"/cm?cmnd="+command_string_encoded+login;
             
         var exec_tasmota = btoa(tasmota_url);
         gets['exec_tasmota'] = exec_tasmota;

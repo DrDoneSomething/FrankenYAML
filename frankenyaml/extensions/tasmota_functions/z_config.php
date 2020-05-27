@@ -13,7 +13,7 @@ defined("IN_YAML_HELPER") || die("not in helper");
 // If not found in the reference, no button will be created
 $display_values_vertical = array(
     "MqttHost",
-    "MqttRetry",
+    "Version",
     "SetOption19",
     "SetOption30",
     "PowerOnState",
@@ -36,7 +36,7 @@ $display_values_SHORT = array(
     "RelayName",
     "other");
 
-define("COMMAND_BUTTONS", array(
+$command_buttons = array(
     "cm:STATUS 5" => "Net Status*",
     "cm:STATUS 6" => "Mqtt Status",
     "cm:mqttretry" => "MQTTRetry?",
@@ -54,12 +54,13 @@ define("COMMAND_BUTTONS", array(
     "cm:buttonretain 1" => "Fix2",
     "cm:buttonretain 0" => "Fix3",
     "cm:poweronstate 3" => "Fix4",
-    "cm:powerretain 1" => "Fix5"));
+    "cm:powerretain 1" => "Fix5");
 // below is how the program interprets data retreived from tasmota
 // array keys are the tasmota values, array values are where to place/store them
 $shared_JSON = array(
     "Topic" => "Topic",
     "MqttRetry" => "MqttRetry",
+    "StatusFWR" => array("Version"=>"Version"),
     "StatusMQT" => array("MqttHost" => "MqttHost", "MqttUser" => "MqttUser"),
     "MqttUser" => "MqttUser",
     "MqttHost" => "MqttHost",
@@ -87,6 +88,7 @@ $relay_commands = array(
     "PulseTime[num] 0" => "Clear PT",
     "POWER[num] 0" => '<img src="'.stored_file("light-off.png").'" />',
     "POWER[num] 1" => '<img src="'.stored_file("light-on.png").'" />');
+
 
 
 ?>

@@ -60,7 +60,7 @@ function command_button($array, $caption, $data_id, $return_id, $title = false,
     if ($close_popup)
         $js_command .= " collapse_warnings();";
     $id_caption=preg_replace( '/[\W]/', '', $caption);
-    
+    $id_caption.= preg_replace( '/[\W]/', '', construct_command_string($array));
     $button_id = $data_id . "_$id_caption" . "_button";
     $button_id = htmlentities($button_id);
     if (!$title) {

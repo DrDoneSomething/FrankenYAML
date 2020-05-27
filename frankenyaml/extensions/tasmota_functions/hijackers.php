@@ -34,7 +34,7 @@ function hijack_tasmota_no_login()
 {
     if (!CALLED_FROM_YAML_HELPER)
         return "hard_redirect";
-    soft_error("Please set a login and password for your tasmota devices.");
+    soft_error("Please set a login and password for your tasmota devices.".HOME_URL);
     display_tasmota_login();
     return "return";
 }
@@ -43,21 +43,27 @@ function hijack_tasmota_no_login()
 function hard_redirect()
 {
     $list_name = "";
-    if(($list_name = list_name(false)))
+    if(($display_mode = gv_or_blank("display_mode")))
+    {
+        $display_mode = "&display_mode=".urlencode($display_mode);
+    }
+    if(($list_name = gv_or_blank("list_name")))
     {
         $list_name = "&list_name=".urlencode($list_name);
     }
     if(in_js())
     {
-        js_dump_line("window.location.href= '".HOME_URL."$list_name';");
+        js_alert(HOME_URL."$list_name$display_mode");
+        exit;
+        js_dump_line("window.location.href= '".HOME_URL."$list_name$display_mode';");
         exit;
     }
     $this_page = get_full_url("CURRENT");
     $dir_name = basename(dirname($this_page));
     list($parent, $crap) = explode($dir_name, $this_page, 2);
-    $ext_name = gv_or_blank("extension", "Tasmota List");
+    $ext_name = gv_or_else("extension", "Tasmota List");
     $ext_name = urlencode($ext_name);
-    $url = $parent . "?extension=$ext_name$list_name";
+    $url = $parent . "?extension=$ext_name$list_name$display_mode";
     
     header("Location: $url");
 

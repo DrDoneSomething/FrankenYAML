@@ -100,6 +100,7 @@ if ($show_menu) {
 
         echo '</td><td width="20%">';
     }
+    if(!$extension_mode)
     login_button();
     echo "</td></tr></table><hr />";
 
