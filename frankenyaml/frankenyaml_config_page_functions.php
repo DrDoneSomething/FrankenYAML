@@ -322,7 +322,7 @@ function echo_saved_add_missing($ask_for_missing)
                 echo '<option value="' . CONFIG_POST_PREFIX . $this_type . '" ' . $select_this .
                     '>' . $pretty_type . '</option>';
             }
-            echo '</select>'.var_export($data,true);
+            echo '</select>';
         }
         echo "</td>";
         echo "<td>";

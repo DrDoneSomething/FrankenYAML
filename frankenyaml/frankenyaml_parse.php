@@ -26,7 +26,7 @@ if (!($parse_input_mode = pv_or_blank('new_parse_input_mode')))
 if (($pm = pv_or_else('new_parse_mode', false)) === false)
     $pm = pv_or_blank('parse_mode');
     
-$first_run = ($pm ? false : true);
+$first_run = ($pm? false : true);
 define("HAS_SAVED_ARRAY", (count($disp_entities) > 1 ? true : false));
 $using_imported_yaml = pv_or_else("using_imported_yaml", false);
 
@@ -54,7 +54,7 @@ while (pv_or_blank("ptext_from_export")) {
     break;
 }
 
-if ($first_run && !$using_imported_yaml && HAS_SAVED_ARRAY)
+if ($first_run && !$using_imported_yaml && HAS_SAVED_ARRAY &&  $parse_input_mode != "ask_for_missing" )
     help_on_load("pm_load_from_saved", "Load configuration.yaml From Saved?");
 
 if (HAS_SAVED_ARRAY || $using_imported_yaml)

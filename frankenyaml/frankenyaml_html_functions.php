@@ -771,6 +771,14 @@ function echo_head_redirect()
         '" />';
 
 }
+function help_link_text($help, $caption)
+{
+    $url = get_full_url("CURRENT") . "?help=$help&help_title=$caption";
+    $html = '<a style="cursor:help;" href="javascript:dhtmlLoadScript(' . "'$url'" .
+        ');">' . $caption . '</a>';
+    return $html;
+
+}
 function help_link($help, $help_title = "", $echo = true)
 {
     $url = get_full_url("CURRENT") . "?help=$help&help_title=$help_title";
@@ -983,38 +991,116 @@ function rethelp_text($help_string, $mode = 'html', $create_file_on_fail = true)
 
     return $text;
 }
+// called by rethelp_text
+// gets contents of {help_filename:title/hrefcontents:return contents bool}
+// {help_filename} OR
+// {help_filename:false:false} OR  {help_filename::} OR {help_filename:0:0} OR {help_filename:false:}
+// if just the help file is specified, it'll return the image link to help file'
+//    eg [?img link] -> go to help
+
+// {help_filename:click here to view help for blarg}
+// {help_filename:click here to view help for blarg:false}
+// {help_filename:click here to view help for blarg:0}
+// {help_filename:click here to view help for blarg:}
+// if return contents is disabled and caption is a string, it'll returrn <a href="[link to help file]">$caption</a>'
+//   eg [click here to view help for blarg] -> go to help
+
+// {help_filename:true:true} OR {help_filename:1:true}
+// if return contents is enabled and caption enabled but not a string, it will send back the contents of the file
+//   with <h2>help title text</h2> (if it exists)
+//    eg :
+//         <h2>help title text</h2>
+//      [--- help_filename contents ---]
+
+// {help_filename:false:true} OR {help_filename:0:true} OR {help_filename:0:1} OR {help_filename:false:farts}
+// if return contents is set and is not "false", "0", or "", it will send back the contents of the file
+//   with NO h2 tag
+//    eg :
+//      [--- help_filename contents ---]
+
+// {help_filename:specified h2 tag contents:true} OR
+// {help_filename:specified h2 tag contents:1} OR
+// {help_filename:specified h2 tag contents:bananas}
+// if return contents is enabled and caption is a string, it'll do <h2>$caption</h2> above returned contents'
+//    eg :
+//         <h2>specified h2 tag contents</h2>
+//      [--- help_filename contents ---]
+
 function rethelp_callback_help_link($m)
 {
     $inner_text = $m[1];
     $input_parse = array(
         "help_file",
-        "help_title",
-        "echo_contents");
+        "caption",
+        "return_contents");
     $input = explode(":", $inner_text);
     foreach ($input_parse as $key => $var) {
         if (isset($input[$key])) {
             $val = $input[$key];
-            if (strtolower($val) == "false")
+            if (strtolower($val) == "false" || $val === 0 || $val === "")
                 $val = false;
+            if (strtolower($val) == "true" || $val === 1)
+                $val = true;
         } else
-            $val = "";
+            $val = false;
         $$var = $val;
     }
-    //
-
-    $result = rethelp_text($help_file, "array", false);
-    if (!$result)
+    if (!$help_file || !($result = rethelp_text($help_file, "array", false)))
         return '{' . "help $help_file not found in" . '}';
 
-    if (!$help_title && $result['title'])
+
+    $result = rethelp_text($help_file, "array", false);
+
+    if ($result['title'])
         $help_title = $result['title'];
-    $help_text = $result['text'];
+    else
+        $help_title = "";
 
-    if ($echo_contents)
-        return $help_text;
+    $contents = $result['text'];
+    
+    $return_contents = $return_contents ? true : false;
+    if ($return_contents) {
+        $mode = "contents_";
+        if (is_string($caption))
+            $mode .= "caption";
+        elseif ($help_title)
+            $mode .= "help_title";
+        else
+            $mode .= "no_title";
 
+    } elseif ($caption) {
+        $mode = "textlink_";
+        if (is_string($caption))
+            $mode .= "caption";
+        elseif ($help_title)
+            $mode .= "help_title";
+        else
+            $mode = "helpimg";
 
-    return help_link($help_file, $help_title, false);
+    } else
+        $mode = "helpimg";
+    $h2 = "";
+    switch ($mode) {
+        case "helpimg":
+        default:
+            return help_link($help_file, $help_title, false);
+        case "contents_no_title";
+            break;
+        case "contents_caption":
+            $h2 = $caption;
+            break;
+        case "contents_help_title":
+            $h2 = $help_title;
+            break;
+        case "textlink_help_title":
+            return help_link_text($help_file, $help_title);
+        case "textlink_caption":
+            return help_link_text($help_file, $caption);
+
+    }
+    if($h2)
+        $contents = "<h2>$caption</h2>$contents";
+    return $contents;
 
 }
 function retconst($var_name)
