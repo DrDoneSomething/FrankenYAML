@@ -29,14 +29,15 @@ BSD license
 
   - Install a web server of your choice
   - Install php on that server
+  - For Windows 10, I use <a href="https://aprelium.com/downloads/">Abyss</a> and used their php install instructions--Free, very stable, fast, etc)
   - put frankenyaml directory in the web directory
   - type the url into your web browser
   - Note: this saves data to text files so it must have permissions!
 
 <h2>Instructions</h2>
 
-  - <a href="https://www.youtube.com/watch?v=4iPefBPq0Wo">FranekYAML</a>
-  - <a href="https://www.youtube.com/watch?v=-sv9vlIR-7U">Tasmota List Basics, installation, advanced use</a>
+  - <a href="https://www.youtube.com/watch?v=4iPefBPq0Wo">FrankenYAML Intro/Basics (video)</a>
+  - <a href="https://www.youtube.com/watch?v=-sv9vlIR-7U">Tasmota List Basics, installation, advanced use (video)</a>
 
 <h2>Removal</h2>
 
@@ -55,7 +56,8 @@ BSD license
 <h2>Customization</h2>
 
   - To modify the built-in button commands and vertical side results for Tasmota List, edit the extensions/tasmota_functions/z_CONFIG.php
+    - Note That the vertical side results will create a refresh button for that value only if it is coded in reference.php
   - To add a new extension to FrankenYAML, create a .php file in the extensions folder, it will create an entry in the nav menu on the top automatically
-    - To automatically load css / js files when your extension is loaded. make a '.js' and/or '.css' file with the same file name as your extensions' php file (minus .php). It will be dumped into the &gt;head&lt; tag. (eg. <i>my_extension.php</i>, when loaded, will have <i>myextension.js</i> and <i>myextension.css</i> in their &gt;head&lt; tag, if they exist
-    - Extensions will inherit all functionality of Tasmota List and will inherit the user's saved settings and whatnot
+    - To automatically load css / js files when your extension is loaded. make a '.js' and/or '.css' file with the same file name as your extensions' php file (minus .php). It will be dumped into the &lt;head&gt; tag. (eg. <i>my_extension.php</i>, when loaded, will have <i>my_extension.js</i> and <i>my_extension.css</i> in their &lt;head&gt; tag, if they exist
+    - Extensions will inherit most of the functionality of FrankenYAML and will inherit the user's saved settings and whatnot
         
